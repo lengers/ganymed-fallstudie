@@ -1,0 +1,59 @@
+<md-content>
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h1 class="md-flex">ConnectedCar Demo</h1>
+    </div>
+  </md-toolbar>
+</md-content>
+<p></p>
+<p></p>
+
+<div layout="row" layout-wrap>
+  <div flex="100"></div>
+</div>
+
+<div layout="row" layout-wrap>
+  <div flex="35"></div>
+  <br>
+  <br>
+  <div ng-app="Login"  layout="column" flex="30">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+        <md-card flex class="littleShadow">
+    <md-content layout-margin="60">
+      <div>
+        <form name="userForm" id="login" autocomplete="off" ng-submit="update(user)">
+          <div layout-gt-sm="column">
+            <md-input-container class="md-block" max-width=40% flex-gt-sm="">
+              <label>Username</label>
+              <input id='user' ng-click="chill('user')" name="username" ng-model="user.name" autofocus required/>
+              <div ng-messages="userForm.username.$error">
+                <!--dieses div macht ne rote message wenn man username vergisst einzutragen-->
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+            <md-input-container class="md-block" max-width=40% flex-gt-sm="">
+              <label>Password</label>
+              <input id='pwd' name="password" ng-click="chill('pwd')" type="password" ng-model="user.password" required/>
+              <div ng-messages="userForm.password.$error">
+                <!--dieses div macht ne rote message wenn man password vergisst einzutragen-->
+                <div ng-message="required">This is required.</div>
+              </div>
+            </md-input-container>
+            <md-button class="md-raised md-primary" type="submit">Login</md-button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </md-content>
+    </md-card>
+</div>
+
+<div flex="35"></div>
+</div>

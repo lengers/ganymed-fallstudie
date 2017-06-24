@@ -1,0 +1,16 @@
+html {
+    height: 100%;
+    background: darkgrey;
+}
+
+div, body, md-content {
+    background: inherit;
+}
+
+.md-ripple-container {
+  z-index: -1
+}
+
+.md-focused {
+    background: transparent!important;
+}
