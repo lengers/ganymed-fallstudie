@@ -1,21 +1,23 @@
 const express = require('express')
-
 const api = express.Router()
 
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcrypt");
+const fs = require('fs')
+const path = require('path');
 
-var secret = "goodenoughforthedemo";
 
-var mysql = require('mysql');
-var connection = mysql.createConnection({
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const secret = "goodenoughforthedemo";
+
+const mysql = require('mysql');
+const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'mysqlpass',
     database: 'Ganymed'
 });
 
-var bodyParser = require('body-parser')
+const bodyParser = require('body-parser')
 api.use(bodyParser.json()); // to support JSON-encoded bodies
 api.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
@@ -173,7 +175,6 @@ api
                     data: "This user seems to already exist."
                 })
             }
-
         } else {
             res.json({
                 status: "error",
@@ -182,18 +183,30 @@ api
         }
     })
     .get('/debug/reset', (req, res) => {
-
-        var hash = bcrypt.hashSync("admin", 10);
-        var name = "admin";
-        console.log(hash);
-
-        var query = "INSERT INTO user (name, hash) VALUES (" + name + ", " + hash + ");"
-        connection.query(query, function(error, results, fields) {
-            if (error) throw error;
+        var sqlpath = path.join(__dirname, '..', '..', 'ganymed.sql');
+        fs.readFile(sqlpath, (err, sqlquery) => {
+            if (err) throw err;
+            var query = sqlquery.toString().replace(/(?:\r\n|\r|\n)/g, ' ');
+            var query_array = query.split(";").filter(function(e){return /\S/.test(e)});
+            try {
+                for (var i = 0; i < query_array.length; i++) {
+                    console.log("EXECUTING QUERY: " + query_array[i]);
+                    connection.query(query_array[i] + ";", function(error, results, fields) {
+                            if (error) throw error;
+                        });
+                };
+                res.json({
+                    status: "ok",
+                    data: "The database has been reset and filled with demo data. The default user ist 'admin' with the password 'admin'"
+                });
+            } catch (e) {
+                res.json({
+                    status: "error",
+                    data: "Something went wrong. You may have to recreate the database yourself.",
+                    error: e
+                });
+            }
         });
-
-
-        res.send("User admin with password 'admin' was added to the database.");
     })
 
 module.exports = api
