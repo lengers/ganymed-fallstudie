@@ -49,13 +49,13 @@ api
                     name: req.body.name,
                     group: results[0].group
                 }, secret);
-                res.json({
+                res.status(200).json({
                     type: true,
                     data: req.body.name,
                     token: user_token
                 });
             } else {
-                res.json({
+                res.status(403).json({
                     type: false,
                     data: req.body.name,
                     token: null
@@ -65,14 +65,15 @@ api
     })
     .get('/auth/check', (req, res) => {
         var local_token = check_jwt(req.headers.token);
+        console.log(req.headers.token);
         if (local_token != "invalid") {
-            res.json({
+            res.status(200).json({
                 status: "ok",
                 data: local_token
             })
         } else {
             console.log("Token invalid.");
-            res.json({
+            res.status(200).json({
                 status: "invalid"
             })
         }
@@ -81,20 +82,20 @@ api
         var local_token = check_jwt(req.headers.token);
         if (local_token != "invalid") {
             try {
-                connection.query('SELECT * FROM device;', [req.body.name], function(error, results, fields) {
+                connection.query('SELECT * FROM device;', function(error, results, fields) {
                     if (error) throw error;
-                    res.json({
+                    res.status(200).json({
                         status: "ok",
                         data: results
                     });
                 });
             } catch (e) {
-                res.json({
+                res.status(500).json({
                     status: "error"
                 })
             }
         } else {
-            res.json({
+            res.status(403).json({
                 status: "error",
                 data: "You are not authorized to access this endpoint"
             })
@@ -117,7 +118,7 @@ api
                 res.status(500).send("The device already exists.")
             }
         } else {
-            res.json({
+            res.status(403).json({
                 status: "error",
                 data: "You are not authorized to access this endpoint"
             })
@@ -140,7 +141,7 @@ api
                 res.status(500).send("The device does not exist.")
             }
         } else {
-            res.json({
+            res.status(403).json({
                 status: "error",
                 data: "You are not authorized to access this endpoint"
             })
@@ -158,25 +159,25 @@ api
                 connection.query(create_query, [req.body.new.name, hash, req.body.new.group, req.body.new.mail], function(error, results, fields) {
                     if (error) {
                         throw error;
-                        res.json({
+                        res.status(500).json({
                             status: "error",
                             data: e
                         })
                     } else {
-                        res.json({
+                        res.status(200).json({
                             status: "ok",
                             data: "The user was created."
                         })
                     }
                 });
             } catch (e) {
-                res.json({
+                res.status(500).json({
                     status: "error",
                     data: "This user seems to already exist."
                 })
             }
         } else {
-            res.json({
+            res.status(403).json({
                 status: "error",
                 data: "You are not authorized to access this endpoint"
             })
@@ -195,12 +196,12 @@ api
                             if (error) throw error;
                         });
                 };
-                res.json({
+                res.status(200).json({
                     status: "ok",
                     data: "The database has been reset and filled with demo data. The default user ist 'admin' with the password 'admin'"
                 });
             } catch (e) {
-                res.json({
+                res.status(500).json({
                     status: "error",
                     data: "Something went wrong. You may have to recreate the database yourself.",
                     error: e

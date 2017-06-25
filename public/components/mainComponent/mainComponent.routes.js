@@ -17,11 +17,17 @@ angular
             .state('main.overview', {
                 templateUrl: '/components/mainComponent/overview.html',
                 controller: 'overviewCtrl',
-                url: ''
+                url: '',
+                params: {
+                    token: null
+                }
             })
             .state('main.usermgmt', {
                 templateUrl: '/components/mainComponent/userMgmt.html',
                 controller: 'userMgmtCtrl',
-                url: 'usermgmt'
+                url: 'usermgmt',
+                params: {
+                    token: null
+                }
             })
     }])

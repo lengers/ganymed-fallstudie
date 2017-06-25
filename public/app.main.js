@@ -1,7 +1,7 @@
 'use strict'
 
 angular
-    .module('Angular-Skeleton', // tools HAVE to be loaded before the main components
+    .module('Ganymed', // tools HAVE to be loaded before the main components
   [
             // tools
     'ui.router', 'ngMaterial',
