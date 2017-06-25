@@ -4,6 +4,7 @@ const api = express.Router()
 const fs = require('fs')
 const path = require('path');
 
+const uuid = require('uuid');
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -32,10 +33,16 @@ function check_jwt(token) {
     }
 }
 
+// Mocking scans requires these variables
+var scan_uuid = "";
+var scan_start = "";
+var scan_percent = 0;
 
 api
-    .get('/hello', (req, res) => {
-        res.send('hello')
+    .get('/help', (req, res) => {
+        res.status(418).json({
+            status: "I'm a teapot."
+        })
     })
     .post('/auth', (req, res) => {
         connection.query('SELECT * FROM user WHERE username = ?', [req.body.name], function(error, results, fields) {
@@ -183,10 +190,116 @@ api
             })
         }
     })
+    .get('/scan/start', (req, res) => {
+        var local_token = check_jwt(req.headers.token);
+        if (local_token != "invalid") {
+            // If a scan is already running, tell the user so
+            if (scan_uuid != "") {
+                res.status(424).json({
+                    status: "error",
+                    data: "A scan is already running."
+                })
+            } else {
+                scan_uuid = uuid.v4();
+                scan_start = Math.floor(Date.now() / 1000);
+                res.status(200).json({
+                    status: "ok",
+                    data: "A scan has been created.",
+                    uuid: scan_uuid
+                })
+            }
+        } else {
+            res.status(403).json({
+                status: "error",
+                data: "You are not authorized to access this endpoint"
+            })
+        }
+    })
+    .get('/scan/status/:uuid', (req, res) => {
+        var local_token = check_jwt(req.headers.token);
+        if (local_token != "invalid") {
+            // If a scan is already running, tell the user so
+            if (scan_uuid != req.params.uuid) {
+                res.status(424).json({
+                    status: "error",
+                    data: "No scan with matching UUID found."
+                })
+            } else {
+                var timestamp = Math.floor(Date.now() / 1000);
+                scan_percent = Math.floor((timestamp - scan_start) / 120 * 100);
+                if (scan_percent > 100) {
+                    scan_percent = 100
+                }
+
+                res.status(200).json({
+                    status: "ok",
+                    data: {
+                        uuid: scan_uuid,
+                        started: scan_start,
+                        completion: scan_percent
+                    }
+                })
+            }
+        } else {
+            res.status(403).json({
+                status: "error",
+                data: "You are not authorized to access this endpoint"
+            })
+        }
+    })
+    .get('/scan/results/:uuid', (req, res) => {
+        var local_token = check_jwt(req.headers.token);
+        if (local_token != "invalid") {
+            // If a scan is already running, tell the user so
+            if (scan_uuid != req.params.uuid) {
+                res.status(424).json({
+                    status: "error",
+                    data: "No scan with matching UUID found."
+                })
+            } else {
+                if (scan_percent < 100) {
+                    res.status(423).json({
+                        status: "error",
+                        data: "The specified scan is not yet finished."
+                    })
+                } else {
+                    // Write scan info to DB
+                    try {
+                        // Create new user
+                        var create_query = "INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);"
+                        connection.query(create_query, [scan_uuid, scan_start, local_token.name, 120, 2], function(error, results, fields) {
+                            if (error) {throw error}
+                        });
+                    } catch (e) {
+                        res.status(500).json({
+                            status: "error",
+                            data: "Something went wrong connecting to the database."
+                        })
+                    }
+                    // Read scan results from file
+                    var scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json');
+                    fs.readFile(scanpath, (err, scanresults) => {
+                        if (err) throw err;
+                        // Send answer
+                        res.status(200).json({
+                            status: "ok",
+                            data: JSON.parse(scanresults)
+                        })
+                    });
+                }
+            }
+        } else {
+            res.status(403).json({
+                status: "error",
+                data: "You are not authorized to access this endpoint"
+            })
+        }
+    })
     .get('/debug/reset', (req, res) => {
         var sqlpath = path.join(__dirname, '..', '..', 'ganymed.sql');
         fs.readFile(sqlpath, (err, sqlquery) => {
             if (err) throw err;
+            // Replace all emtpy elements in array
             var query = sqlquery.toString().replace(/(?:\r\n|\r|\n)/g, ' ');
             var query_array = query.split(";").filter(function(e){return /\S/.test(e)});
             try {

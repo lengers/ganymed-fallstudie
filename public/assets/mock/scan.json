@@ -1,0 +1,50 @@
+[
+    {
+       "hostname":"IPCam Garage",
+       "ip":"10.0.0.100",
+       "mac":"E8:90:58:1B:89:9C",
+       "openPorts":[
+          {
+             "port":80,
+             "service":"http"
+          },
+          {
+              "port":443,
+              "service":"https"
+          }
+        ],
+       "osNmap":"Linux"
+   },
+   {
+      "hostname":"Feuermelder Waschküche",
+      "ip":"10.0.0.72",
+      "mac":"B9:7D:7C:5E:97:8E",
+      "openPorts":[
+         {
+            "port":223,
+            "service":"telnet"
+         },
+         {
+             "port":8080,
+             "service":"http"
+         }
+       ],
+      "osNmap":"Unknown"
+  },
+  {
+     "hostname":"Wetterstation",
+     "ip":"10.0.0.112",
+     "mac":"8A:A3:B2:FB:E2:CD",
+     "openPorts":[
+        {
+           "port":80,
+           "service":"http"
+       },
+       {
+           "port":161,
+           "service":"snmp"
+       }
+      ],
+     "osNmap":"Linux"
+ }
+]
