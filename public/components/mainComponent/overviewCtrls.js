@@ -6,10 +6,8 @@ angular
             console.log($localStorage.token);
             console.log($sessionStorage.token);
 
-            if ($localStorage.token == null) {
+            if ($sessionStorage.token == null) {
                 $state.go('login');
-            } else if ($sessionStorage.token == null) {
-                $sessionStorage.token = $localStorage.token;
             };
             var req = {
                 method: 'GET',
@@ -18,9 +16,13 @@ angular
                     'token': $sessionStorage.token
                 }
             }
-            $http(req).then(function(data, error) {
-                console.log(data);
-                console.log(error);
+            $http(req).then(function(res, error) {
+                if (res.data.status != "ok") {
+                    $state.go(login);
+                }
+                // } else if (res.data.data.group == "admin") {
+                //     $state.go(main.usermgmt.all)
+                // }
             });
 
             $scope.updateDeviceData = function(type) {

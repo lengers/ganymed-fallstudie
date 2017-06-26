@@ -25,12 +25,15 @@ api.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 function check_jwt(token) {
-    try {
-        var decoded = jwt.verify(token.toString(), secret);
-        return decoded;
-    } catch (e) {
-        return "invalid";
-    }
+    jwt.verify(token, secret, function(err, decoded) {
+        if (err) {
+            console.log(err);
+            return "invalid";
+        } else {
+            console.log(decoded);
+            return decoded;
+        }
+    });
 }
 
 // Mocking scans requires these variables
@@ -53,6 +56,7 @@ api
                 // TODO: Implement groups like:
                 //   var user_token = jwt.sign({user: req.params.name, group: TODO}, secret);
                 var user_token = jwt.sign({
+                    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 13),
                     name: req.body.name,
                     group: results[0].group
                 }, secret);
@@ -71,229 +75,237 @@ api
         });
     })
     .get('/auth/check', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        console.log(req.headers.token);
-        if (local_token != "invalid") {
-            res.status(200).json({
-                status: "ok",
-                data: local_token
-            })
-        } else {
-            console.log("Token invalid.");
-            res.status(200).json({
-                status: "invalid"
-            })
-        }
-    })
-    .get('/devices', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        if (local_token != "invalid") {
-            try {
-                connection.query('SELECT * FROM device;', function(error, results, fields) {
-                    if (error) throw error;
-                    res.status(200).json({
-                        status: "ok",
-                        data: results
-                    });
-                });
-            } catch (e) {
-                res.status(500).json({
-                    status: "error"
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                console.log("Token invalid.");
+                res.status(200).json({
+                    status: "invalid"
+                })
+            } else {
+                console.log("DEBUG: " + decoded);
+                res.status(200).json({
+                    status: "ok",
+                    data: decoded
                 })
             }
-        } else {
-            res.status(403).json({
-                status: "error",
-                data: "You are not authorized to access this endpoint"
-            })
-        }
+        });
+    })
+    .get('/devices', (req, res) => {
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                res.status(403).json({
+                    status: "error",
+                    data: "You are not authorized to access this endpoint"
+                })
+            } else {
+                try {
+                    connection.query('SELECT * FROM device;', function(error, results, fields) {
+                        if (error) throw error;
+                        res.status(200).json({
+                            status: "ok",
+                            data: results
+                        });
+                    });
+                } catch (e) {
+                    res.status(500).json({
+                        status: "error"
+                    })
+                }
+            }
+        });
     })
     .post('/devices/create', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        if (local_token.group == "admin") {
-            var create_query = "INSERT INTO device (uuid, ip, mac, ports, risk_level, services) VALUES (?, ?, ?, ?, ? , ?);"
-            try {
-                connection.query(create_query, [req.body.uuid, req.body.ip, req.body.mac, req.body.manufacturer, req.body.ports, req.body.risk_level, req.body.services, req.body.name, req.body.modell], function(error, results, fields) {
-                    if (error) {
-                        throw error;
-                        res.status(500).send("An error occured: " + error);
-                    } else {
-                        res.status(200).send("The devices was added.")
-                    }
-                });
-            } catch (e) {
-                res.status(500).send("The device already exists.")
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                res.status(403).json({
+                    status: "error",
+                    data: "You are not authorized to access this endpoint"
+                })
+            } else {
+                var create_query = "INSERT INTO device (uuid, ip, mac, ports, risk_level, services) VALUES (?, ?, ?, ?, ? , ?);"
+                try {
+                    connection.query(create_query, [req.body.uuid, req.body.ip, req.body.mac, req.body.manufacturer, req.body.ports, req.body.risk_level, req.body.services, req.body.name, req.body.modell], function(error, results, fields) {
+                        if (error) {
+                            throw error;
+                            res.status(500).send("An error occured: " + error);
+                        } else {
+                            res.status(200).send("The devices was added.")
+                        }
+                    });
+                } catch (e) {
+                    res.status(500).send("The device already exists.")
+                }
             }
-        } else {
-            res.status(403).json({
-                status: "error",
-                data: "You are not authorized to access this endpoint"
-            })
-        }
+        });
     })
     .post('/devices/remove', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        if (local_token.group == "admin") {
-            var create_query = "DELETE FROM device WHERE uuid = ?;"
-            try {
-                connection.query(create_query, [req.body.uuid], function(error, results, fields) {
-                    if (error) {
-                        throw error;
-                        res.status(500).send("An error occured: " + error);
-                    } else {
-                        res.status(200).send("The devices was removed.")
-                    }
-                });
-            } catch (e) {
-                res.status(500).send("The device does not exist.")
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                res.status(403).json({
+                    status: "error",
+                    data: "You are not authorized to access this endpoint"
+                })
+            } else {
+                var create_query = "DELETE FROM device WHERE uuid = ?;"
+                try {
+                    connection.query(create_query, [req.body.uuid], function(error, results, fields) {
+                        if (error) {
+                            throw error;
+                            res.status(500).send("An error occured: " + error);
+                        } else {
+                            res.status(200).send("The devices was removed.")
+                        }
+                    });
+                } catch (e) {
+                    res.status(500).send("The device does not exist.")
+                }
             }
-        } else {
-            res.status(403).json({
-                status: "error",
-                data: "You are not authorized to access this endpoint"
-            })
-        }
+        });
     })
     // Expects {"token": "$2a$10$9B3aQ.iG8ekCH34yiIt9k.8D.EdMDIyMYenQRYr.sMsyzyA0B38p.","new": {"name": "testuser","password": "testpassword", "group": "group", "mail": "mail"}}
     .post('/users/create', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        if (local_token.group == "admin") {
-            // Create password hash
-            var hash = bcrypt.hashSync(req.body.new.password, 10);
-            try {
-                // Create new user
-                var create_query = "INSERT INTO user (username, `hash`, `group`, mail) VALUES (?, ?, ?, ?);"
-                connection.query(create_query, [req.body.new.name, hash, req.body.new.group, req.body.new.mail], function(error, results, fields) {
-                    if (error) {
-                        throw error;
-                        res.status(500).json({
-                            status: "error",
-                            data: e
-                        })
-                    } else {
-                        res.status(200).json({
-                            status: "ok",
-                            data: "The user was created."
-                        })
-                    }
-                });
-            } catch (e) {
-                res.status(500).json({
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                res.status(403).json({
                     status: "error",
-                    data: "This user seems to already exist."
+                    data: "You are not authorized to access this endpoint"
                 })
+            } else {
+                // Create password hash
+                var hash = bcrypt.hashSync(req.body.new.password, 10);
+                try {
+                    // Create new user
+                    var create_query = "INSERT INTO user (username, `hash`, `group`, mail) VALUES (?, ?, ?, ?);"
+                    connection.query(create_query, [req.body.new.name, hash, req.body.new.group, req.body.new.mail], function(error, results, fields) {
+                        if (error) {
+                            throw error;
+                            res.status(500).json({
+                                status: "error",
+                                data: e
+                            })
+                        } else {
+                            res.status(200).json({
+                                status: "ok",
+                                data: "The user was created."
+                            })
+                        }
+                    });
+                } catch (e) {
+                    res.status(500).json({
+                        status: "error",
+                        data: "This user seems to already exist."
+                    })
+                }
             }
-        } else {
-            res.status(403).json({
-                status: "error",
-                data: "You are not authorized to access this endpoint"
-            })
-        }
+        });
     })
     .get('/scan/start', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        if (local_token != "invalid") {
-            // If a scan is already running, tell the user so
-            if (scan_uuid != "") {
-                res.status(424).json({
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                res.status(403).json({
                     status: "error",
-                    data: "A scan is already running."
+                    data: "You are not authorized to access this endpoint"
                 })
             } else {
-                scan_uuid = uuid.v4();
-                scan_start = Math.floor(Date.now() / 1000);
-                res.status(200).json({
-                    status: "ok",
-                    data: "A scan has been created.",
-                    uuid: scan_uuid
-                })
-            }
-        } else {
-            res.status(403).json({
-                status: "error",
-                data: "You are not authorized to access this endpoint"
-            })
-        }
-    })
-    .get('/scan/status/:uuid', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        if (local_token != "invalid") {
-            // If a scan is already running, tell the user so
-            if (scan_uuid != req.params.uuid) {
-                res.status(424).json({
-                    status: "error",
-                    data: "No scan with matching UUID found."
-                })
-            } else {
-                var timestamp = Math.floor(Date.now() / 1000);
-                scan_percent = Math.floor((timestamp - scan_start) / 120 * 100);
-                if (scan_percent > 100) {
-                    scan_percent = 100
-                }
-
-                res.status(200).json({
-                    status: "ok",
-                    data: {
-                        uuid: scan_uuid,
-                        started: scan_start,
-                        completion: scan_percent
-                    }
-                })
-            }
-        } else {
-            res.status(403).json({
-                status: "error",
-                data: "You are not authorized to access this endpoint"
-            })
-        }
-    })
-    .get('/scan/results/:uuid', (req, res) => {
-        var local_token = check_jwt(req.headers.token);
-        if (local_token != "invalid") {
-            // If a scan is already running, tell the user so
-            if (scan_uuid != req.params.uuid) {
-                res.status(424).json({
-                    status: "error",
-                    data: "No scan with matching UUID found."
-                })
-            } else {
-                if (scan_percent < 100) {
-                    res.status(423).json({
+                // If a scan is already running, tell the user so
+                if (scan_uuid != "") {
+                    res.status(424).json({
                         status: "error",
-                        data: "The specified scan is not yet finished."
+                        data: "A scan is already running."
                     })
                 } else {
-                    // Write scan info to DB
-                    try {
-                        // Create new user
-                        var create_query = "INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);"
-                        connection.query(create_query, [scan_uuid, scan_start, local_token.name, 120, 2], function(error, results, fields) {
-                            if (error) {throw error}
-                        });
-                    } catch (e) {
-                        res.status(500).json({
-                            status: "error",
-                            data: "Something went wrong connecting to the database."
-                        })
-                    }
-                    // Read scan results from file
-                    var scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json');
-                    fs.readFile(scanpath, (err, scanresults) => {
-                        if (err) throw err;
-                        // Send answer
-                        res.status(200).json({
-                            status: "ok",
-                            data: JSON.parse(scanresults)
-                        })
-                    });
+                    scan_uuid = uuid.v4();
+                    scan_start = Math.floor(Date.now() / 1000);
+                    res.status(200).json({
+                        status: "ok",
+                        data: "A scan has been created.",
+                        uuid: scan_uuid
+                    })
                 }
             }
-        } else {
-            res.status(403).json({
-                status: "error",
-                data: "You are not authorized to access this endpoint"
-            })
-        }
+        });
+    })
+    .get('/scan/status/:uuid', (req, res) => {
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                res.status(403).json({
+                    status: "error",
+                    data: "You are not authorized to access this endpoint"
+                })
+            } else {
+                // If a scan is already running, tell the user so
+                if (scan_uuid != req.params.uuid) {
+                    res.status(424).json({
+                        status: "error",
+                        data: "No scan with matching UUID found."
+                    })
+                } else {
+                    var timestamp = Math.floor(Date.now() / 1000);
+                    scan_percent = Math.floor((timestamp - scan_start) / 120 * 100);
+                    if (scan_percent > 100) {
+                        scan_percent = 100
+                    }
+
+                    res.status(200).json({
+                        status: "ok",
+                        data: {
+                            uuid: scan_uuid,
+                            started: scan_start,
+                            completion: scan_percent
+                        }
+                    })
+                }
+            }
+        });
+    })
+    .get('/scan/results/:uuid', (req, res) => {
+        jwt.verify(req.headers.token, secret, function(err, decoded) {
+            if (err) {
+                res.status(403).json({
+                    status: "error",
+                    data: "You are not authorized to access this endpoint"
+                })
+            } else {
+                // If a scan is already running, tell the user so
+                if (scan_uuid != req.params.uuid) {
+                    res.status(424).json({
+                        status: "error",
+                        data: "No scan with matching UUID found."
+                    })
+                } else {
+                    if (scan_percent < 100) {
+                        res.status(423).json({
+                            status: "error",
+                            data: "The specified scan is not yet finished."
+                        })
+                    } else {
+                        // Write scan info to DB
+                        try {
+                            // Create new user
+                            var create_query = "INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);"
+                            connection.query(create_query, [scan_uuid, scan_start, local_token.name, 120, 2], function(error, results, fields) {
+                                if (error) {throw error}
+                            });
+                        } catch (e) {
+                            res.status(500).json({
+                                status: "error",
+                                data: "Something went wrong connecting to the database."
+                            })
+                        }
+                        // Read scan results from file
+                        var scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json');
+                        fs.readFile(scanpath, (err, scanresults) => {
+                            if (err) throw err;
+                            // Send answer
+                            res.status(200).json({
+                                status: "ok",
+                                data: JSON.parse(scanresults)
+                            })
+                        });
+                    }
+                }
+            }
+        });
     })
     .get('/debug/reset', (req, res) => {
         var sqlpath = path.join(__dirname, '..', '..', 'ganymed.sql');
