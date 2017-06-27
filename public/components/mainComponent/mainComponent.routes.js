@@ -4,30 +4,30 @@ angular
       $stateProvider
 
             .state('login', {
-                templateUrl: "components/mainComponent/login.html",
-                controller: 'loginCtrl',
-                url: "/login"
+              templateUrl: 'components/mainComponent/login.html',
+              controller: 'loginCtrl',
+              url: '/login'
             })
             .state('main', {
-                abstract: true,
-                templateUrl: '/components/mainComponent/navbar.html',
-                controller: 'navbarCtrl',
-                url: '/'
+              abstract: true,
+              templateUrl: '/components/mainComponent/navbar.html',
+              controller: 'navbarCtrl',
+              url: '/'
             })
             .state('main.overview', {
-                templateUrl: '/components/mainComponent/overview.html',
-                controller: 'overviewCtrl',
-                url: '',
-                params: {
-                    token: null
-                }
+              templateUrl: '/components/mainComponent/overview.html',
+              controller: 'overviewCtrl',
+              url: '',
+              params: {
+                token: null
+              }
             })
             .state('main.usermgmt', {
-                templateUrl: '/components/mainComponent/userMgmt.html',
-                controller: 'userMgmtCtrl',
-                url: 'usermgmt',
-                params: {
-                    token: null
-                }
+              templateUrl: '/components/mainComponent/userMgmt.html',
+              controller: 'userMgmtCtrl',
+              url: 'usermgmt',
+              params: {
+                token: null
+              }
             })
     }])
