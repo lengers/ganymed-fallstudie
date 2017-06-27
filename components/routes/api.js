@@ -18,12 +18,6 @@ const connection = mysql.createConnection({
   database: 'Ganymed'
 })
 
-const bodyParser = require('body-parser')
-api.use(bodyParser.json()) // to support JSON-encoded bodies
-api.use(bodyParser.urlencoded({ // to support URL-encoded bodies
-  extended: true
-}))
-
 const checkJwt = (req, res, next) => {
   jwt.verify(req.headers.token, secret, (err, decoded) => {
     if (err) {
@@ -32,7 +26,6 @@ const checkJwt = (req, res, next) => {
         data: 'You are not authorized to access this endpoint'
       })
     } else {
-      console.log('Working fine till now')
       req.headers.decoded = decoded
       next()
     }
@@ -41,13 +34,13 @@ const checkJwt = (req, res, next) => {
 
 const checkJwtAdmin = (req, res, next) => {
   jwt.verify(req.headers.token, secret, (err, decoded) => {
-    if ((err) || (decoded.group !== 'admin')) {
+    if (err || decoded.group !== 'admin') {
       res.status(401).json({
         status: 'error',
         data: 'You are not authorized to access this endpoint'
       })
     } else {
-      next(req, res, decoded)
+      next()
     }
   })
 }
@@ -120,38 +113,71 @@ api
         })
       }
     })
-    .post('/devices/create', checkJwt, (req, res) => {
+    .get('/devices/:uuid', checkJwt, (req, res) => {
+      try {
+        connection.query('SELECT * FROM device WHERE uuid = ?;', req.params.uuid, (error, results, fields) => {
+          if (error) throw error
+          res.status(200).json({
+            status: 'ok',
+            data: results
+          })
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error'
+        })
+      }
+    })
+    .post('/devices', checkJwt, (req, res) => {
       const createQuery = 'INSERT INTO device (uuid, ip, mac, ports, risk_level, services) VALUES (?, ?, ?, ?, ? , ?);'
       try {
         connection.query(createQuery, [req.body.uuid, req.body.ip, req.body.mac, req.body.manufacturer, req.body.ports, req.body.risk_level, req.body.services, req.body.name, req.body.modell], (error, results, fields) => {
           if (error) {
-            res.status(500).send('An error occured: ' + error)
+            res.status(500).json({
+              status: 'error',
+              error: error
+            })
             throw error
           } else {
-            res.status(200).send('The devices was added.')
+            res.status(200).json({
+              status: 'ok',
+              data: 'The device was added.'
+            })
           }
         })
       } catch (e) {
-        res.status(500).send('The device already exists.')
+        res.status(500).json({
+          status: 'error',
+          error: 'The device already exists.'
+        })
       }
     })
-    .post('/devices/remove', checkJwt, (req, res) => {
+    .delete('/devices/:uuid', checkJwt, (req, res) => {
       const createQuery = 'DELETE FROM device WHERE uuid = ?;'
       try {
-        connection.query(createQuery, [req.body.uuid], (error, results, fields) => {
+        connection.query(createQuery, [req.params.uuid], (error, results, fields) => {
           if (error) {
-            res.status(500).send('An error occured: ' + error)
+            res.status(500).json({
+              status: 'error',
+              error: error
+            })
             throw error
           } else {
-            res.status(200).send('The devices was removed.')
+            res.status(200).json({
+              status: 'ok',
+              data: 'The device was removed.'
+            })
           }
         })
       } catch (e) {
-        res.status(500).send('The device does not exist.')
+        res.status(500).json({
+          status: 'error',
+          error: 'The device does not exist.'
+        })
       };
     })
     // Expects {"token": "$2a$10$9B3aQ.iG8ekCH34yiIt9k.8D.EdMDIyMYenQRYr.sMsyzyA0B38p.","new": {"name": "testuser","password": "testpassword", "group": "group", "mail": "mail"}}
-    .post('/users/create', checkJwtAdmin, (req, res) => {
+    .post('/users', checkJwtAdmin, (req, res) => {
         // Create password hash
       const hash = bcrypt.hashSync(req.body.new.password, 10)
       try {
@@ -175,6 +201,78 @@ api
         res.status(500).json({
           status: 'error',
           data: 'This user seems to already exist.'
+        })
+      }
+    })
+    .delete('/users/:username', checkJwtAdmin, (req, res) => {
+      try {
+        const createQuery = 'DELETE FROM user WHERE username = ?;'
+        connection.query(createQuery, [req.params.username], (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              data: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: 'The user was deleted.'
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'No such user.'
+        })
+      }
+    })
+    .get('/users', checkJwtAdmin, (req, res) => {
+      try {
+        const createQuery = 'SELECT * FROM user;'
+        connection.query(createQuery, (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              data: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: results
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'No such user.'
+        })
+      }
+    })
+    .get('/users/:username', checkJwtAdmin, (req, res) => {
+      try {
+        const createQuery = 'SELECT * FROM user WHERE username = ?;'
+        connection.query(createQuery, [req.params.username], (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              data: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: results
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'No such user.'
         })
       }
     })
