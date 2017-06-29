@@ -3,6 +3,7 @@ angular.module('mainComponent.main', [
   'loginCtrls',
   'overviewCtrls',
   'userMgmtCtrls',
+  'devicesCtrls',
   'mainComponentCtrls',
   'mainComponentRoutes'
 ]);

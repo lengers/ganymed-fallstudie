@@ -30,4 +30,9 @@ angular
                 token: null
               }
             })
+            .state('main.devices', {
+                templateUrl: '/components/mainComponent/devices.html',
+                controller: 'devicesCtrl',
+                url: 'devices'
+            })
     }])
