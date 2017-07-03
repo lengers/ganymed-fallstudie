@@ -48,6 +48,7 @@ const checkJwtAdmin = (req, res, next) => {
 // Mocking scans requires these constiables
 let scanUuid = ''
 let scanStart = ''
+let scanStartISO = ''
 let scanPercent = 0
 
 api
@@ -338,6 +339,39 @@ api
         })
       }
     })
+    .get('/scan', checkJwt, (req, res) => {
+      let answerdata = {
+        running: null,
+        previous: null
+      }
+
+      try {
+        const createQuery = 'SELECT * FROM scan;'
+        connection.query(createQuery, (error, results, fields) => {
+          if (error) {
+            throw error
+          }
+          console.log(results)
+          answerdata.previous = results
+          res.status(200).json({
+            status: 'ok',
+            data: answerdata
+          })
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'Something went wrong connecting to the database.'
+        })
+      }
+
+    //   if (scanUuid !== '') {
+    //     answerdata.running = scanUuid
+    //   }
+    //   scanUuid = uuid.v4()
+    //   scanStart = Math.floor(Date.now() / 1000)
+
+    })
     .get('/scan/start', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
       console.log(req.headers.decoded)
@@ -348,7 +382,9 @@ api
         })
       } else {
         scanUuid = uuid.v4()
-        scanStart = Math.floor(Date.now() / 1000)
+        let dateNow = Date.now()
+        scanStart = Math.floor(dateNow / 1000)
+        scanStartISO = new Date(dateNow).toISOString().slice(0, 19).replace('T', ' ')
         res.status(200).json({
           status: 'ok',
           data: 'A scan has been created.',
@@ -365,7 +401,7 @@ api
         })
       } else {
         const timestamp = Math.floor(Date.now() / 1000)
-        scanPercent = Math.floor((timestamp - scanStart) / 120 * 100)
+        scanPercent = Math.floor((timestamp - scanStart) / 10 * 100)
         if (scanPercent > 100) {
           scanPercent = 100
         }
@@ -382,10 +418,31 @@ api
     .get('/scan/results/:uuid', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
       if (scanUuid !== req.params.uuid) {
-        res.status(424).json({
-          status: 'error',
-          data: 'No scan with matching UUID found.'
-        })
+        try {
+          const createQuery = 'SELECT * FROM scan WHERE scan_no = ?;'
+          connection.query(createQuery, [req.params.uuid], (error, results, fields) => {
+            if (error) {
+              throw error
+            }
+            const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
+            fs.readFile(scanpath, (err, scanresults) => {
+              if (err) throw err
+                        // Send answer
+              res.status(200).json({
+                status: 'ok',
+                data: {
+                  uuid: req.params.uuid,
+                  results: JSON.parse(scanresults)
+                }
+              })
+            })
+          })
+        } catch (e) {
+          res.status(424).json({
+            status: 'error',
+            data: 'No scan with matching UUID found.'
+          })
+        }
       } else {
         if (scanPercent < 100) {
           res.status(423).json({
@@ -397,27 +454,33 @@ api
           try {
                     // Create new user
             const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
-            connection.query(createQuery, [scanUuid, scanStart, req.headers.decoded.name, 120, 2], (error, results, fields) => {
+            connection.query(createQuery, [scanUuid, scanStartISO, req.headers.decoded.name, 120, 2], (error, results, fields) => {
               if (error) {
+                console.log(error)
                 throw error
               }
+              console.log(results)
+              // Read scan results from file
+              const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
+              fs.readFile(scanpath, (err, scanresults) => {
+                if (err) throw err
+                          // Send answer
+                res.status(200).json({
+                  status: 'ok',
+                  data: {
+                    uuid: req.params.uuid,
+                    results: JSON.parse(scanresults)
+                  }
+                })
+              })
             })
           } catch (e) {
+            console.log(e)
             res.status(500).json({
               status: 'error',
               data: 'Something went wrong connecting to the database.'
             })
           }
-                // Read scan results from file
-          const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
-          fs.readFile(scanpath, (err, scanresults) => {
-            if (err) throw err
-                    // Send answer
-            res.status(200).json({
-              status: 'ok',
-              data: JSON.parse(scanresults)
-            })
-          })
         }
       }
     })

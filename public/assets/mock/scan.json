@@ -1,50 +1,77 @@
-[
-    {
-       "hostname":"IPCam Garage",
-       "ip":"10.0.0.100",
-       "mac":"E8:90:58:1B:89:9C",
-       "openPorts":[
-          {
-             "port":80,
-             "service":"http"
-          },
-          {
-              "port":443,
-              "service":"https"
-          }
-        ],
-       "osNmap":"Linux"
-   },
-   {
-      "hostname":"Feuermelder Waschküche",
-      "ip":"10.0.0.72",
-      "mac":"B9:7D:7C:5E:97:8E",
-      "openPorts":[
-         {
-            "port":223,
-            "service":"telnet"
-         },
-         {
-             "port":8080,
-             "service":"http"
-         }
-       ],
-      "osNmap":"Unknown"
-  },
-  {
-     "hostname":"Wetterstation",
-     "ip":"10.0.0.112",
-     "mac":"8A:A3:B2:FB:E2:CD",
-     "openPorts":[
+{
+    "devices": [{
+            "hostname": "IPCam Garage",
+            "ip": "10.0.0.100",
+            "mac": "E8:90:58:1B:89:9C",
+            "openPorts": [{
+                    "port": 80,
+                    "service": "http"
+                },
+                {
+                    "port": 443,
+                    "service": "https"
+                }
+            ],
+            "osNmap": "Linux",
+            "risk": 3
+        },
         {
-           "port":80,
-           "service":"http"
-       },
-       {
-           "port":161,
-           "service":"snmp"
-       }
-      ],
-     "osNmap":"Linux"
- }
-]
+            "hostname": "Feuermelder Waschküche",
+            "ip": "10.0.0.72",
+            "mac": "B9:7D:7C:5E:97:8E",
+            "openPorts": [{
+                    "port": 223,
+                    "service": "telnet"
+                },
+                {
+                    "port": 8080,
+                    "service": "http"
+                }
+            ],
+            "osNmap": "Unknown",
+            "risk": 2
+        },
+        {
+            "hostname": "Wetterstation",
+            "ip": "10.0.0.112",
+            "mac": "8A:A3:B2:FB:E2:CD",
+            "openPorts": [{
+                    "port": 80,
+                    "service": "http"
+                },
+                {
+                    "port": 161,
+                    "service": "snmp"
+                }
+            ],
+            "osNmap": "Linux",
+            "risk": 8
+        },
+        {
+            "hostname": "Heizkessel",
+            "ip": "10.0.0.123",
+            "mac": "8A:G1:B2:F4:H3:DJ",
+            "openPorts": [{
+                    "port": 80,
+                    "service": "http"
+                },
+                {
+                    "port": 161,
+                    "service": "snmp"
+                }
+            ],
+            "osNmap": "Linux",
+            "risk": 3
+        }
+    ],
+    "chartdata": {
+        "ports": {
+            "ports": [80, 161, 223, 443, 8080],
+            "count": [3, 2, 1, 1, 1]
+        },
+        "risks": {
+            "risks": [2, 3, 8],
+            "count": [1, 2, 1]
+        }
+    }
+}

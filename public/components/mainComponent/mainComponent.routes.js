@@ -29,4 +29,9 @@ angular
                 controller: 'userMgmtAdminCtrl',
                 url: ''
             })
+            .state('main.scan', {
+                templateUrl: '/components/mainComponent/scan.html',
+                controller: 'scanCtrl',
+                url: 'scans'
+            })
     }])

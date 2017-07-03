@@ -1,0 +1,58 @@
+<md-dialog aria-label="Scan einsehen" flex=60>
+    <style>
+        .active {
+            background-color: #B0DBE1;
+        }
+    </style>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Scan {{scanresults.uuid}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-src="assets/img/close.svg" aria-label="Schließen"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <md-content layout-padding="">
+            <div layout="row">
+                <div layout-gt-sm="column" flex=50 min-width="500px" ;>
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Risikolevel</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <canvas id="doughnut" class="chart chart-doughnut" chart-data="data" chart-labels="labels">
+                        </canvas>
+                    </md-card>
+                </div>
+
+                <div flex="5" hide-xs="" hide-sm="">
+                    <!-- Spacer //-->
+                </div>
+
+                <div layout-gt-sm="column" flex=50 min-width="500px" ;>
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Risikolevel</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <canvas id="doughnut" class="chart chart-doughnut" chart-data="data" chart-labels="labels">
+                        </canvas>
+                    </md-card>
+                </div>
+            </div>
+    </md-content>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="cancel()">
+            Schließen
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>
