@@ -87,3 +87,8 @@ md-table-container::-webkit-scrollbar-thumb {
 .md-focused {
   background: transparent!important;
 }
+
+.flex-60, .layout-row>.flex-60 {
+    max-width: 80%;
+    max-height: 90%;
+}

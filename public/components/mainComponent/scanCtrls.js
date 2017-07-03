@@ -1,12 +1,23 @@
+// Credits to Tobias Rahloff (https://github.com/trahloff) for assitance with chart.js
 'use strict'
 angular
     .module('scanCtrls', ['ngMaterial', 'ngMessages', 'ngStorage', "chart.js"])
-    .controller('scanCtrl', function($scope, $http, $state, $rootScope, $localStorage, $mdToast, $mdDialog, $sessionStorage) {
+    .config(['ChartJsProvider', function (ChartJsProvider) {
+      // Configure all charts
+      ChartJsProvider.setOptions({
+        legend: {
+          display: true,
+          position: 'bottom',
+          fullWidth: true
+        }
+      })
+    }])
+    .controller('scanCtrl', function($scope, $http, $state, $rootScope, $localStorage, $mdToast, $mdDialog, $sessionStorage, $timeout) {
 
         if ($sessionStorage.token === undefined) {
             $state.go('login')
         };
-        var req = {
+        let req = {
             method: 'GET',
             url: '/api/auth/check',
             headers: {
@@ -23,7 +34,7 @@ angular
         })
 
         $scope.getScans = function(type) {
-            var req = {
+            let req = {
                 method: 'GET',
                 url: '/api/scan',
                 headers: {
@@ -32,9 +43,59 @@ angular
             }
             $http(req).success(function(data) {
                 $scope.previousScans = data.data.previous;
-                console.log($scope.previousScans);
             })
         }
+
+        $scope.startScan = function() {
+            let req = {
+                method: 'GET',
+                url: '/api/scan/start',
+                headers: {
+                    'token': $sessionStorage.token
+                }
+            }
+            $http(req).success(function(data) {
+                let scanUuid = data.uuid
+                $mdToast.show(
+                    $mdToast.simple()
+                    .textContent('Scan gestartet.')
+                    .position("top right")
+                    .hideDelay(3000)
+                );
+                $timeout(function() {
+                    let req = {
+                        method: 'GET',
+                        url: '/api/scan/status/' + scanUuid,
+                        headers: {
+                            'token': $sessionStorage.token
+                        }
+                    }
+                    $http(req).success(function(data) {
+                        let req = {
+                            method: 'GET',
+                            url: '/api/scan/results/' + scanUuid,
+                            headers: {
+                                'token': $sessionStorage.token
+                            }
+                        }
+                        $http(req).success(function(data) {
+                            $state.reload();
+                            $mdToast.show(
+                                $mdToast.simple()
+                                .textContent('Scan abgeschlossen.')
+                                .position("top right")
+                                .hideDelay(3000)
+                            );
+                        })
+                    })
+                }, 10000);
+
+            })
+        }
+
+
+
+
 
         $scope.viewScan = function(ev, scan) {
             $rootScope.scan = scan;
@@ -51,6 +112,8 @@ angular
 
         function viewScanController($scope, $mdDialog, $rootScope) {
             $scope.scan = $rootScope.scan;
+            $scope.port = {};
+            $scope.risk = {};
 
             const groupsReq = {
                 method: 'GET',
@@ -64,17 +127,16 @@ angular
 
             $http(groupsReq).success(function(data) {
                 $scope.scanresults = data.data;
-                $scope.ports = []
-
-                for (var i = 0; i < $scope.scanresults.results.length; i++) {
-                    var result = $scope.scanresults.results[i];
-                    for (var j = 0; j < result.openPorts.length; j++) {
-                        $scope.ports = $scope.ports.concat(result.openPorts[j].port);
-                    }
-                }
-                console.log($scope.scanresults);
-                console.log($scope.scanresults.uuid);
-                console.log($scope.ports);
+                // set ports graph
+                $scope.port.ports = $scope.scanresults.results.chartdata.ports.ports;
+                $scope.port.series = $scope.scanresults.results.chartdata.ports.ports;
+                $scope.port.count = $scope.scanresults.results.chartdata.ports.count;
+                console.log($scope.port);
+                // set risk graph
+                $scope.risk.risks = $scope.scanresults.results.chartdata.risks.risks;
+                $scope.risk.series = $scope.scanresults.results.chartdata.risks.risks;
+                $scope.risk.count = $scope.scanresults.results.chartdata.risks.count;
+                console.log($scope.risk);
             })
 
             $scope.cancel = function() {

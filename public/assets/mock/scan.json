@@ -12,6 +12,10 @@
                     "service": "https"
                 }
             ],
+            "services": {
+                "services": "http, https",
+                "ports": "80, 443"
+            },
             "osNmap": "Linux",
             "risk": 3
         },
@@ -28,6 +32,10 @@
                     "service": "http"
                 }
             ],
+            "services": {
+                "services": "telnet, http",
+                "ports": "223, 8080"
+            },
             "osNmap": "Unknown",
             "risk": 2
         },
@@ -44,6 +52,10 @@
                     "service": "snmp"
                 }
             ],
+            "services": {
+                "services": "http, snmp",
+                "ports": "80, 161"
+            },
             "osNmap": "Linux",
             "risk": 8
         },
@@ -60,6 +72,10 @@
                     "service": "snmp"
                 }
             ],
+            "services": {
+                "services": "http, snmp",
+                "ports": "80, 161"
+            },
             "osNmap": "Linux",
             "risk": 3
         }
