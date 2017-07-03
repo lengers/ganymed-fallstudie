@@ -7,10 +7,83 @@ div, body, md-content {
     background: inherit;
 }
 
+.md-focused {
+    background: transparent!important;
+}
+
+md-button, md-icon {
+  outline: none;
+}
+
+#wrapper {
+  margin: 20px;
+  background-color: inherit;
+}
+
+.md-dialog-container {
+  background: none;
+  background-color: rgba(105, 105, 105, 0.48);
+  z-index: 1;
+}
+
+.md-headline {
+  font-weight: 500;
+}
+
+.md-scroll-mask {
+  visibility: hidden;
+}
+
+body::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+body::-webkit-scrollbar-thumb {
+  outline: 1px solid slategrey;
+  background-color: darkgrey;
+}
+
+md-content::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+md-table-container {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+md-table-container::-webkit-scrollbar {
+  width: 0em;
+}
+
+md-table-container::-webkit-scrollbar-thumb {
+  outline: 1px solid slategrey;
+  background-color: darkgrey;
+  position: relative;
+}
+
+.titanic {
+  visibility: hidden;
+  z-index: -1;
+  float: none;
+  position: fixed;
+  vertical-align: sub;
+}
+
+.utilityNavbarButtons {
+  position: absolute;
+  bottom: 0;
+  width: 100%
+}
+
+.active {
+  background-color: #E0E0E0;
+}
+
 .md-ripple-container {
   z-index: -1
 }
 
 .md-focused {
-    background: transparent!important;
+  background: transparent!important;
 }

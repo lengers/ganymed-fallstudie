@@ -176,14 +176,15 @@ api
         })
       };
     })
-    // Expects {"token": "$2a$10$9B3aQ.iG8ekCH34yiIt9k.8D.EdMDIyMYenQRYr.sMsyzyA0B38p.","new": {"name": "testuser","password": "testpassword", "group": "group", "mail": "mail"}}
-    .post('/users', checkJwtAdmin, (req, res) => {
+    // Expects {"password": "password", "group": "group", "settings: "JSON", "mail": "mail", "notification_on": BOOLEAN}
+    .post('/users/:username', checkJwtAdmin, (req, res) => {
+      console.log(req.body)
         // Create password hash
-      const hash = bcrypt.hashSync(req.body.new.password, 10)
+      const hash = bcrypt.hashSync(req.body.password, 10)
       try {
             // Create new user
-        const createQuery = 'INSERT INTO user (username, `hash`, `group`, mail) VALUES (?, ?, ?, ?);'
-        connection.query(createQuery, [req.body.new.name, hash, req.body.new.group, req.body.new.mail], (error, results, fields) => {
+        const createQuery = 'INSERT INTO user (username, `hash`, `group`, settings, mail, notification_on) VALUES (?, ?, ?, ?, ?, ?);'
+        connection.query(createQuery, [req.params.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on], (error, results, fields) => {
           if (error) {
             res.status(500).json({
               status: 'error',
@@ -194,6 +195,43 @@ api
             res.status(200).json({
               status: 'ok',
               data: 'The user was created.'
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'This user seems to already exist.'
+        })
+      }
+    })
+    .put('/users/:username', checkJwtAdmin, (req, res) => {
+      console.log(req.body)
+      var createQuery = ''
+      var params = []
+      var hash = ''
+      if ((req.body.password === '') || (req.body.password === null) || (req.body.password === null)) {
+        createQuery = 'UPDATE user SET username = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
+        params = [req.body.username, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
+      } else {
+          // Create password hash
+        hash = bcrypt.hashSync(req.body.password, 10)
+        createQuery = 'UPDATE user SET username = ?, `hash` = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
+        params = [req.body.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
+      }
+      try {
+            // Update user
+        connection.query(createQuery, params, (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              data: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: 'The user was updated.'
             })
           }
         })
@@ -273,6 +311,30 @@ api
         res.status(500).json({
           status: 'error',
           data: 'No such user.'
+        })
+      }
+    })
+    .get('/groups', checkJwtAdmin, (req, res) => {
+      try {
+        const createQuery = 'SELECT * FROM `group`;'
+        connection.query(createQuery, (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              data: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: results
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'No such group.'
         })
       }
     })

@@ -1,15 +1,13 @@
 'use strict'
 angular
     .module('userMgmtCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
-    .controller('userMgmtCtrl', function($scope, $http, $rootScope, $localStorage, $mdToast, $sessionStorage) {
+    .controller('userMgmtCtrl', function($scope, $http, $state, $rootScope, $localStorage, $mdToast, $mdDialog, $sessionStorage) {
 
         $scope.user = {
             name: '',
-            group: '',
             mail: '',
             settings: {
                 receive_mails: false,
-
             }
         }
 
@@ -17,7 +15,7 @@ angular
             sendmail: false
         };
 
-        if ($sessionStorage.token == undefined) {
+        if ($sessionStorage.token === undefined) {
             $state.go('login')
         };
         var req = {
@@ -29,14 +27,17 @@ angular
         }
         $http(req).then(function(res, error) {
             if (res.data.status != 'ok') {
-                $state.go(login)
+                $state.go('login')
             } else {
                 $scope.decoded = res.data.data;
-                $scope.updateUserData();
+                if ($scope.decoded.group === "admin") {
+                    $state.go('main.account.admin')
+                }
+                $scope.getUserData();
             }
         })
 
-        $scope.updateUserData = function(type) {
+        $scope.getUserData = function(type) {
             var req = {
                 method: 'GET',
                 url: '/api/users/' + $scope.decoded.name,
@@ -44,21 +45,98 @@ angular
                     'token': $sessionStorage.token
                 }
             }
-            // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
             $http(req).success(function(data) {
-                $scope.user.name = data.data[0].username;
-                if (data.data[0].mail === null) {
-                    $scope.user.mail = "Not set"
-                } else {
-                    $scope.user.mail = data.data[0].mail;
-                }
-                $scope.user.group = data.data[0].group;
+                $scope.user = data.data[0];
+                console.log($scope.user);
             })
         }
 
-        $scope.$watch('data', function(newValue, oldValue, scope) {
-            console.log(newValue);
-            console.log(scope);
-        }, true);
+        $scope.updateUserData = function() {
+            const userUpdateReq = {
+                method: 'PUT',
+                url: '/api/users/' + $scope.user.username,
+                headers: {
+                    'token': $sessionStorage.token
+                },
+                data: {
+                    username: $scope.user.username,
+                    password: null,
+                    group: $scope.user.group,
+                    settings: $scope.user.settings,
+                    mail: $scope.user.mail,
+                    notification_on: $scope.user.notification_on
+                }
+            }
+            $http(userUpdateReq).success(function(data) {
+                $state.reload();
+                $mdToast.show(
+                    $mdToast.simple()
+                    .textContent('Änderungen gespeichert.')
+                    .position("top right")
+                    .hideDelay(3000)
+                );
+            })
+        }
+
+        $scope.changePassword = function(ev, user) {
+            $rootScope.user = user;
+            $mdDialog.show({
+                controller: passwordDialogController,
+                templateUrl: '/components/mainComponent/dialogs/changePassword.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: false,
+                hasBackdrop: false
+            }).then($state.reload())
+            // $scope.updateUsersData();
+        }
+
+        function passwordDialogController($scope, $mdDialog) {
+            $scope.user = $rootScope.user;
+            $scope.user.password = '';
+            $scope.user.passwordConfirm = '';
+
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
+
+            $scope.answer = function(answer) {
+                if (answer === "abort") {
+                    $mdDialog.cancel();
+                } else if (answer === "send") {
+
+                    console.log($scope.user);
+                    const userUpdateReq = {
+                        method: 'PUT',
+                        url: '/api/users/' + $scope.user.username,
+                        headers: {
+                            'token': $sessionStorage.token
+                        },
+                        data: {
+                            username: $scope.user.username,
+                            password: $scope.user.password,
+                            group: $scope.user.group,
+                            settings: $scope.user.settings,
+                            mail: $scope.user.mail,
+                            notification_on: $scope.user.notification_on
+                        }
+                    }
+                    $http(userUpdateReq).success(function(data) {
+                        console.log(data);
+                        $mdDialog.hide(answer);
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Änderungen gespeichert.')
+                            .position("top right")
+                            .hideDelay(3000)
+                        );
+                        $state.reload();
+                    })
+
+                }
+            };
+            $rootScope.user = undefined;
+        }
 
     })

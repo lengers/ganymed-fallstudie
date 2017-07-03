@@ -1,7 +1,7 @@
 'use strict'
 angular
     .module('overviewCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
-    .controller('overviewCtrl', function ($scope, $http, $rootScope, $localStorage, $sessionStorage) {
+    .controller('overviewCtrl', function ($scope, $state, $http, $rootScope, $localStorage, $sessionStorage) {
       $scope.$storage = $localStorage
 
       if ($sessionStorage.token == undefined) {
