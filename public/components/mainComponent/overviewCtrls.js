@@ -1,12 +1,10 @@
 'use strict'
 angular
     .module('overviewCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
-    .controller('overviewCtrl', function ($scope, $http, $rootScope, $localStorage, $sessionStorage) {
+    .controller('overviewCtrl', function ($scope, $state, $http, $rootScope, $localStorage, $sessionStorage) {
       $scope.$storage = $localStorage
-      console.log($localStorage.token)
-      console.log($sessionStorage.token)
 
-      if ($sessionStorage.token == null) {
+      if ($sessionStorage.token == undefined) {
         $state.go('login')
       };
       var req = {

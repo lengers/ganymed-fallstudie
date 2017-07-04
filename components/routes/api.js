@@ -48,6 +48,7 @@ const checkJwtAdmin = (req, res, next) => {
 // Mocking scans requires these constiables
 let scanUuid = ''
 let scanStart = ''
+let scanStartISO = ''
 let scanPercent = 0
 
 api
@@ -176,14 +177,15 @@ api
         })
       };
     })
-    // Expects {"token": "$2a$10$9B3aQ.iG8ekCH34yiIt9k.8D.EdMDIyMYenQRYr.sMsyzyA0B38p.","new": {"name": "testuser","password": "testpassword", "group": "group", "mail": "mail"}}
-    .post('/users', checkJwtAdmin, (req, res) => {
+    // Expects {"password": "password", "group": "group", "settings: "JSON", "mail": "mail", "notification_on": BOOLEAN}
+    .post('/users/:username', checkJwtAdmin, (req, res) => {
+      console.log(req.body)
         // Create password hash
-      const hash = bcrypt.hashSync(req.body.new.password, 10)
+      const hash = bcrypt.hashSync(req.body.password, 10)
       try {
             // Create new user
-        const createQuery = 'INSERT INTO user (username, `hash`, `group`, mail) VALUES (?, ?, ?, ?);'
-        connection.query(createQuery, [req.body.new.name, hash, req.body.new.group, req.body.new.mail], (error, results, fields) => {
+        const createQuery = 'INSERT INTO user (username, `hash`, `group`, settings, mail, notification_on) VALUES (?, ?, ?, ?, ?, ?);'
+        connection.query(createQuery, [req.params.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on], (error, results, fields) => {
           if (error) {
             res.status(500).json({
               status: 'error',
@@ -194,6 +196,43 @@ api
             res.status(200).json({
               status: 'ok',
               data: 'The user was created.'
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'This user seems to already exist.'
+        })
+      }
+    })
+    .put('/users/:username', checkJwtAdmin, (req, res) => {
+      console.log(req.body)
+      var createQuery = ''
+      var params = []
+      var hash = ''
+      if ((req.body.password === '') || (req.body.password === null) || (req.body.password === null)) {
+        createQuery = 'UPDATE user SET username = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
+        params = [req.body.username, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
+      } else {
+          // Create password hash
+        hash = bcrypt.hashSync(req.body.password, 10)
+        createQuery = 'UPDATE user SET username = ?, `hash` = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
+        params = [req.body.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
+      }
+      try {
+            // Update user
+        connection.query(createQuery, params, (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              data: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: 'The user was updated.'
             })
           }
         })
@@ -276,6 +315,63 @@ api
         })
       }
     })
+    .get('/groups', checkJwtAdmin, (req, res) => {
+      try {
+        const createQuery = 'SELECT * FROM `group`;'
+        connection.query(createQuery, (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              data: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: results
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'No such group.'
+        })
+      }
+    })
+    .get('/scan', checkJwt, (req, res) => {
+      let answerdata = {
+        running: null,
+        previous: null
+      }
+
+      try {
+        const createQuery = 'SELECT * FROM scan;'
+        connection.query(createQuery, (error, results, fields) => {
+          if (error) {
+            throw error
+          }
+          console.log(results)
+          answerdata.previous = results
+          res.status(200).json({
+            status: 'ok',
+            data: answerdata
+          })
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          data: 'Something went wrong connecting to the database.'
+        })
+      }
+
+    //   if (scanUuid !== '') {
+    //     answerdata.running = scanUuid
+    //   }
+    //   scanUuid = uuid.v4()
+    //   scanStart = Math.floor(Date.now() / 1000)
+
+    })
     .get('/scan/start', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
       console.log(req.headers.decoded)
@@ -286,7 +382,9 @@ api
         })
       } else {
         scanUuid = uuid.v4()
-        scanStart = Math.floor(Date.now() / 1000)
+        let dateNow = Date.now()
+        scanStart = Math.floor(dateNow / 1000)
+        scanStartISO = new Date(dateNow).toISOString().slice(0, 19).replace('T', ' ')
         res.status(200).json({
           status: 'ok',
           data: 'A scan has been created.',
@@ -303,7 +401,7 @@ api
         })
       } else {
         const timestamp = Math.floor(Date.now() / 1000)
-        scanPercent = Math.floor((timestamp - scanStart) / 120 * 100)
+        scanPercent = Math.floor((timestamp - scanStart) / 10 * 100)
         if (scanPercent > 100) {
           scanPercent = 100
         }
@@ -320,10 +418,31 @@ api
     .get('/scan/results/:uuid', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
       if (scanUuid !== req.params.uuid) {
-        res.status(424).json({
-          status: 'error',
-          data: 'No scan with matching UUID found.'
-        })
+        try {
+          const createQuery = 'SELECT * FROM scan WHERE scan_no = ?;'
+          connection.query(createQuery, [req.params.uuid], (error, results, fields) => {
+            if (error) {
+              throw error
+            }
+            const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
+            fs.readFile(scanpath, (err, scanresults) => {
+              if (err) throw err
+                        // Send answer
+              res.status(200).json({
+                status: 'ok',
+                data: {
+                  uuid: req.params.uuid,
+                  results: JSON.parse(scanresults)
+                }
+              })
+            })
+          })
+        } catch (e) {
+          res.status(424).json({
+            status: 'error',
+            data: 'No scan with matching UUID found.'
+          })
+        }
       } else {
         if (scanPercent < 100) {
           res.status(423).json({
@@ -335,27 +454,33 @@ api
           try {
                     // Create new user
             const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
-            connection.query(createQuery, [scanUuid, scanStart, req.headers.decoded.name, 120, 2], (error, results, fields) => {
+            connection.query(createQuery, [scanUuid, scanStartISO, req.headers.decoded.name, 120, 2], (error, results, fields) => {
               if (error) {
+                console.log(error)
                 throw error
               }
+              console.log(results)
+              // Read scan results from file
+              const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
+              fs.readFile(scanpath, (err, scanresults) => {
+                if (err) throw err
+                          // Send answer
+                res.status(200).json({
+                  status: 'ok',
+                  data: {
+                    uuid: req.params.uuid,
+                    results: JSON.parse(scanresults)
+                  }
+                })
+              })
             })
           } catch (e) {
+            console.log(e)
             res.status(500).json({
               status: 'error',
               data: 'Something went wrong connecting to the database.'
             })
           }
-                // Read scan results from file
-          const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
-          fs.readFile(scanpath, (err, scanresults) => {
-            if (err) throw err
-                    // Send answer
-            res.status(200).json({
-              status: 'ok',
-              data: JSON.parse(scanresults)
-            })
-          })
         }
       }
     })

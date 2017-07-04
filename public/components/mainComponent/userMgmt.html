@@ -1,32 +1,37 @@
-<div ng-controller="userMgmtCtrl">
+<div>
     <md-content class="layout-row" layout-align="center start" layout-xs="column">
-        <md-card flex=30>
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">User Information</span>
-                </md-card-title-text>
-            </md-card-title>
-            <md-card-content>
-                <md-content class="layout-column" layout-align=" stretch">
-                    <div>
-                        <md-input-container class="md-block" flex=90>
-                            <label>Name</label>
-                            <input ng-model="user.name">
-                        </md-input-container>
-                    </div>
-                    <div>
-                        <md-input-container class="md-block" flex=90>
-                            <label>Email</label>
-                            <input ng-model="user.mail" type="email">
-                        </md-input-container>
-                    </div>
-                </md-content>
-            </md-card-content>
-            <md-card-actions layout="row" layout-align="end center">
-                <md-button class="md-raised" type="save">Speichern</md-button>
-            </md-card-actions>
+        <div class="layout-column" flex=30>
+        <md-card>
+            <form name="userInfoForm" autocomplete="off" ng-submit="updateUserData()">
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">User Information</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <md-content class="layout-column" layout-align=" stretch">
+                        <div>
+                            <md-input-container class="md-block" flex=90>
+                                <label>Name</label>
+                                <input ng-model="user.username">
+                            </md-input-container>
+                        </div>
+                        <div>
+                            <md-input-container class="md-block" flex=90>
+                                <label>Email</label>
+                                <input ng-model="user.mail" type="email">
+                            </md-input-container>
+                        </div>
+                    </md-content>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-raised" type="submit">Speichern</md-button>
+                </md-card-actions>
+            </form>
         </md-card>
-        <md-card flex=30>
+    </div>
+    <div class="layout-column" flex=30>
+        <md-card>
             <md-card-title>
                 <md-card-title-text>
                     <span class="md-headline">User Settings</span>
@@ -36,7 +41,7 @@
                 <md-content class="layout-column" layout-align=" stretch">
                     <div>
                         <md-input-container class="md-block">
-                            <md-switch md-no-ink ng-model="sendMail">
+                            <md-switch md-no-ink ng-model="data.sendmail">
                                 Benachrichtigungen per Email
                             </md-switch>
 
@@ -47,7 +52,20 @@
 
             </md-card-content>
         </md-card>
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">User Passwort</span>
+                </md-card-title-text>
+            </md-card-title>
+                <md-card-actions layout="row" layout-align="center center">
+                    <md-button class="md-raised" ng-click="changePassword($event, user)">Passwort ändern</md-button>
+                </md-card-actions>
+        </md-card>
+    </div>
     </md-content>
 </div>
-
+<treasure-overlay-spinner style="height: 100%" active=carSharingAllSpinner>
+    <div ui-view></div>
+</treasure-overlay-spinner>
 </div>

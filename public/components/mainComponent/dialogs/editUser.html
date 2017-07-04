@@ -1,0 +1,116 @@
+<md-dialog aria-label="Benutzer bearbeiten" flex=60>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Benutzer bearbeiten</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-src="assets/img/close.svg" aria-label="Schließen"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <md-content layout-padding="">
+            <form name="userForm">
+                <div layout="row">
+
+                    <div layout-gt-sm="column" flex=50 min-width="500px" ;>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Username</label>
+                            <input md-maxlength="30" required="" name="name" ng-model="newUser.username">
+
+                            <div ng-messages="userForm.name.$error">
+                                <div ng-message="required">Ein Username wird benötigt.</div>
+                                <div ng-message="md-maxlength">Der Username darf nicht länger als 30 Zeichen sein.</div>
+                                <div ng-message="default">Der Username ist bereits belegt.</div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="5" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Neues Passwort (leer lassen für altes Passwort)</label>
+                            <input type="password" name="password" placeholder='Passwort' ng-model="newUser.password">
+
+                            <div ng-messages="userForm.password.$error">
+                                <div ng-message="required">Ein Passwort wird benötigt.</div>
+                            </div>
+                        </md-input-container>
+
+
+                        <div flex="5" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Passwort bestätigen</label>
+                            <input type="password" name="passwordConfirm" ng-model="newUser.passwordConfirm" placeholder="Passwort bestätigen" data-password-verify="newUser.password">
+                            <div ng-messages="userForm.passwordConfirm.$error">
+                                <div ng-message="passwordVerify">
+                                    Die Passwörter stimmen nicht überein.
+                                </div>
+                            </div>
+                        </md-input-container>
+
+                    </div>
+
+                    <div flex="5" hide-xs="" hide-sm="">
+                        <!-- Spacer //-->
+                    </div>
+
+                    <div layout-gt-sm="column" flex=50>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Email</label>
+                            <input name="email" ng-model="newUser.mail" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/">
+
+                            <div class="hint" ng-show="showHints">Wie sind Sie zu erreichen?</div>
+
+                            <div ng-messages="userForm.email.$error">
+                                <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                                    Ihre Email muss zwischen 10 und 100 Zeichen lang sein und aussehen wie eine Email-Adresse.
+                                </div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="5" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Gruppe</label>
+                            <md-select ng-model="newUser.group">
+                                <md-option ng-repeat="group in groups" value="{{group.group_id}}" ng-selected="$first">
+                                    {{group.group_id}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <div flex="5" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <md-switch md-no-ink name="notification" ng-model="newUser.notification_on" required>
+                             Benachrichtigungen per Mail aktivieren.
+                           </md-switch>
+                        </md-input-container>
+                    </div>
+                </div>
+            </form>
+        </md-content>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="answer('abort')">
+            Abbrechen
+        </md-button>
+        <md-button ng-click="answer('send')" class="md-primary">
+            Änderungen speichern
+        </md-button>
+    </md-dialog-actions>
+    </form>
+</md-dialog>

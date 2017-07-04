@@ -1,0 +1,32 @@
+<div>
+    <p></p>
+    <p></p>
+    <md-content class="layout-row" layout-align="center start" layout-xs="column">
+        <md-card flex=60>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Benutzer</span>
+                </md-card-title-text>
+            </md-card-title>
+
+            <md-content>
+                <md-divider></md-divider>
+                <md-list>
+                    <md-list-item class="md-3-line" ng-repeat="user in users">
+                        <div class="md-list-item-text">
+                            <p>
+                                <h3>{{user.username}}</h3></p>
+                            <p>{{user.group}}</p>
+                        </div>
+                        <md-icon md-svg-src="/assets/img/build_black.svg" ng-click="editUser($event, user)" aria-label="Benutzer bearbeiten" class="md-secondary md-hue-3"></md-icon>
+                        <md-icon md-svg-src="/assets/img/clear_black.svg" ng-click="deleteUser($event, user)" aria-label="Benutzer löschen" class="md-secondary md-hue-3"></md-icon>
+                        <md-divider></md-divider>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-click="addUser($event)" aria-label="Benutzer hinzufügen">Benutzer hinzufügen</md-button>
+            </md-card-actions>
+        </md-card>
+    </md-content>
+</div>

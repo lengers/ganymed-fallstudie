@@ -1,0 +1,35 @@
+<div>
+    <p></p>
+    <md-content class="layout-row" layout-align="center start" layout-xs="column">
+        <md-card flex=60>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Scans</span>
+                </md-card-title-text>
+            </md-card-title>
+
+            <md-content>
+                <md-divider></md-divider>
+                <md-list>
+                    <md-list-item class="md-3-line" ng-repeat="scan in previousScans | orderBy:'-start_time'" ng-click="viewScan($event, scan.scan_no)">
+                        <div style="min-width: 50px">
+                            <p>
+                                <h2>{{scan.risk_level}}</h2>
+                            </p>
+                        </div>
+                        <div class="md-list-item-text">
+                            <p>
+                                <h3>{{scan.scan_no}}</h3></p>
+                            <p>Risiko: {{scan.risk_level}}, gestartet {{scan.start_time}} durch User {{scan.started_by_user}}</p>
+                        </div>
+                        <md-divider></md-divider>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-click="startScan()" type="submit" aria-label="Benutzer hinzufügen">Scan starten</md-button>
+            </md-card-actions>
+        </md-card>
+    </md-content>
+</div>
+</div>

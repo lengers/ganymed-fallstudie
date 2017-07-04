@@ -17,18 +17,22 @@ angular
             .state('main.overview', {
               templateUrl: '/components/mainComponent/overview.html',
               controller: 'overviewCtrl',
-              url: '',
-              params: {
-                token: null
-              }
+              url: ''
             })
-            .state('main.usermgmt', {
+            .state('main.account', {
               templateUrl: '/components/mainComponent/userMgmt.html',
               controller: 'userMgmtCtrl',
-              url: 'usermgmt',
-              params: {
-                token: null
-              }
+              url: 'account'
+            })
+            .state('main.account.admin', {
+                templateUrl: '/components/mainComponent/userMgmtAdmin.html',
+                controller: 'userMgmtAdminCtrl',
+                url: ''
+            })
+            .state('main.scan', {
+                templateUrl: '/components/mainComponent/scan.html',
+                controller: 'scanCtrl',
+                url: 'scans'
             })
             .state('main.devices', {
                 templateUrl: '/components/mainComponent/devices.html',
