@@ -1,7 +1,7 @@
 'use strict'
 angular
-.module('devicesCtrls', ['ngMaterial'])
-.controller('devicesCtrl', ['$scope', function($scope, $mdThemingProvider) {
+.module('devicesCtrls', ['ngMaterial', 'ngStorage'])
+.controller('devicesCtrl', function($scope, $rootScope, $http, $mdDialog, $sessionStorage, $localStorage) {
 
     var imagePath = 'assets/img/device.png';
 
@@ -79,19 +79,39 @@ angular
         return list.indexOf(item) > -1;
       };
 
-      var req = {
-        method: 'GET',
-        url: '/api/devices',
-        headers: {
-          'token': $sessionStorage.token
-        }
+      let req = {
+          method: 'GET',
+          url: '/api/devices',
+          headers: {
+              'token': $sessionStorage.token
+          }
       }
-      $http(req).then(function (res, error) {
-        if (res.data.status != 'ok') {
-          $state.go(login)
-        }
-                // } else if (res.data.data.group == "admin") {
-                //     $state.go(main.usermgmt.all)
-                // }
+      // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
+      $http(req).success(function(data) {
+          $scope.devices = data.data;
+          console.log($scope.devices);
       })
-}]);
+
+      $scope.showAdvanced = function(ev,device) {
+        $rootScope.device = device
+      $mdDialog.show({
+        controller: DialogController,
+        templateUrl: '/components/mainComponent/dialogs/details.html',
+        parent: angular.element(document.body),
+        targetEvent: ev,
+        clickOutsideToClose:true,
+        hasBackdrop: false,
+        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+      })
+    };
+
+      function DialogController($scope, $mdDialog) {
+        $scope.device = $rootScope.device
+       $scope.hide = function() {
+         $mdDialog.hide();
+       }};
+       
+       $scope.cancel = function() {
+           $mdDialog.cancel();
+       };
+});

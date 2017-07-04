@@ -36,12 +36,12 @@ CREATE TABLE device (
     uuid VARCHAR(50) PRIMARY KEY,
     ip VARCHAR(128) NOT NULL,
     mac VARCHAR(64) NOT NULL,
-    manufacturer VARCHAR(50) NOT NULL,
+    manufacturer VARCHAR(50),
     ports VARCHAR(20) NOT NULL,
     risk_level INT NOT NULL,
     services VARCHAR(50) NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    modell VARCHAR(50) NOT NULL
+    name VARCHAR(50),
+    modell VARCHAR(50)
 );
 
 INSERT INTO `group`(Group_id, alter_device_list, run_scan, create_user, change_group) VALUES ('admin', true , true, true, true);

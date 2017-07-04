@@ -3,30 +3,39 @@
     <md-card flex="100" >
     <div>
       <md-content>
-       <md-list flex>
-         <md-subheader class="md-no-sticky">Überwachte Geräte</md-subheader>
-         <md-list-item class="md-3-line" ng-repeat="item in listofdev" ng-click="null">
-           <img ng-src="{{item.pic}}" class="md-avatar" />
-           <div class="md-list-item-text" flex=20>
-             <h3>{{ item.device }}</h3>
+         <div layout="row">
+           <div flex=33 >
+             <h4>Ip-Adressen</h4>
            </div>
-           <div class="md-list-item-text" flex=20>
-             <h3>{{ item.risklevel }}</h3>
+           <div flex=33>
+             <h4>Risiko-Level</h4>
            </div>
-           <div class="md-list-item-text" flex=20>
-             <h3>{{ item.ip }}{{ item.port }}</h3>
+           <div flex=33>
+             <h4>Mac-Adresse</h4>
            </div>
-           <div class="md-list-item-text" flex=20>
-             <h3>{{ item.manufactur }}</h3>
+         </div>
+      </md-content>
+    </div>
+        <md-divider></md-divider>
+        <md-list flex>
+         <md-list-item class="md-3-line" ng-repeat="device in devices" ng-click="showAdvanced($event, device)">
+           <!-- <img ng-src="{{item.pic}}" class="md-avatar" /> -->
+
+           <div class="md-list-item-text" flex=30>
+             <h3>{{ device.ip }}</h3>
            </div>
 
+           <div class="md-list-item-text" flex=30>
+             <h3>{{ device.risk_level }}</h3>
+           </div>
 
-
+           <div class="md-list-item-text" flex=30>
+             <h3>{{ device.mac }}</h3>
+           </div>
 
          </md-list-item>
        </md-list>
-     </md-content>
-   </div>
+
  </md-card>
 </div>
 </div>
