@@ -1,78 +1,32 @@
 <div flex ng-controller="devicesCtrl" class="md-padding" ng-cloak>
-
-  <div layout="row" layout-align=" center">
-
-    <md-card flex=20 layout-align="center center">
-    <div>
-      <md-input-container layout-align="center center">
-        <label>IP-Adressen</label>
-        <md-select ng-model="selectedItem1" md-selected-text="getSelectedTextIP()">
-          <md-optgroup label="IP-Adressen">
-            <md-option ng-value="item" ng-repeat="item in ip">{{item}}</md-option>
-          </md-optgroup>
-        </md-select>
-      </md-input-container>
-    </div>
-</md-card>
-
-<md-card flex="20" layout-align="center center">
-  <div>
-    <md-input-container>
-      <label>Namen</label>
-      <md-select ng-model="selectedItem2" md-selected-text="getSelectedTextName()">
-        <md-optgroup label="Namen">
-          <md-option ng-value="item" ng-repeat="item in namen">{{item}}</md-option>
-        </md-optgroup>
-      </md-select>
-    </md-input-container>
-  </div>
-</md-card>
-
-<md-card flex="60">
-    <div>
-      <fieldset class="standard">
-          <legend>Filter Optionen</legend>
-          <div layout="row" layout-wrap flex>
-            <div ng-repeat="item in items" class="standard" flex="50">
-              <label>
-                <input type="checkbox" ng-checked="exists(item, selected)"
-                       ng-click="toggle(item, selected)"/>
-                {{ item }}
-              </label>
-            </div>
-          </div>
-        </fieldset>
-    </div>
-</div>
-</div>
-
   <div layout="row" layout-wrap>
-    <md-card flex="66">
+    <md-card flex="100" >
     <div>
       <md-content>
        <md-list flex>
          <md-subheader class="md-no-sticky">Überwachte Geräte</md-subheader>
          <md-list-item class="md-3-line" ng-repeat="item in listofdev" ng-click="null">
-        <md-button class="md-secondary" ng-click="menu($event)">Detailansicht</md-button>
            <img ng-src="{{item.pic}}" class="md-avatar" />
-           <div class="md-list-item-text" layout="column">
+           <div class="md-list-item-text" flex=20>
              <h3>{{ item.device }}</h3>
-             <h3>{{ item.risklevel }}</h3>
-             <h4>{{ item.ip }}{{ item.port }}</h4>
-             <p>{{ item.manufactur }}</p>
-
-
            </div>
+           <div class="md-list-item-text" flex=20>
+             <h3>{{ item.risklevel }}</h3>
+           </div>
+           <div class="md-list-item-text" flex=20>
+             <h3>{{ item.ip }}{{ item.port }}</h3>
+           </div>
+           <div class="md-list-item-text" flex=20>
+             <h3>{{ item.manufactur }}</h3>
+           </div>
+
+
+
+
          </md-list-item>
        </md-list>
      </md-content>
    </div>
  </md-card>
-
-    <div>
-      <md-card flex="33">
-      <p>Verbundene Geräte</p>
-    </md-card>
-    </div>
-
-  </div>
+</div>
+</div>

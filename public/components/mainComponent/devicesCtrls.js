@@ -79,5 +79,19 @@ angular
         return list.indexOf(item) > -1;
       };
 
-
+      var req = {
+        method: 'GET',
+        url: '/api/devices',
+        headers: {
+          'token': $sessionStorage.token
+        }
+      }
+      $http(req).then(function (res, error) {
+        if (res.data.status != 'ok') {
+          $state.go(login)
+        }
+                // } else if (res.data.data.group == "admin") {
+                //     $state.go(main.usermgmt.all)
+                // }
+      })
 }]);
