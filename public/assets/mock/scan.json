@@ -17,7 +17,8 @@
                 "ports": "80, 443"
             },
             "osNmap": "Linux",
-            "risk": 3
+            "risk": 3,
+            "catergory": "camera"
         },
         {
             "hostname": "Feuermelder Waschküche",
@@ -37,7 +38,8 @@
                 "ports": "223, 8080"
             },
             "osNmap": "Unknown",
-            "risk": 2
+            "risk": 2,
+            "catergory": "security"
         },
         {
             "hostname": "Wetterstation",
@@ -57,7 +59,8 @@
                 "ports": "80, 161"
             },
             "osNmap": "Linux",
-            "risk": 8
+            "risk": 8,
+            "catergory": "information"
         },
         {
             "hostname": "Heizkessel",
@@ -77,7 +80,8 @@
                 "ports": "80, 161"
             },
             "osNmap": "Linux",
-            "risk": 3
+            "risk": 3,
+            "catergory": "infrastructre"
         }
     ],
     "chartdata": {
@@ -89,5 +93,6 @@
             "risks": [2, 3, 8],
             "count": [1, 2, 1]
         }
-    }
+    },
+    "overallRisk": 4
 }

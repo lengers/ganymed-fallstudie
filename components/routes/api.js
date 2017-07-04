@@ -370,8 +370,11 @@ api
     //   }
     //   scanUuid = uuid.v4()
     //   scanStart = Math.floor(Date.now() / 1000)
-
     })
+    /* ============================================ scan ============================================
+     *
+     *
+     */
     .get('/scan/start', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
       console.log(req.headers.decoded)
@@ -454,7 +457,7 @@ api
           try {
                     // Create new user
             const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
-            connection.query(createQuery, [scanUuid, scanStartISO, req.headers.decoded.name, 120, 2], (error, results, fields) => {
+            connection.query(createQuery, [scanUuid, scanStartISO, req.headers.decoded.name, 120, 4], (error, results, fields) => {
               if (error) {
                 console.log(error)
                 throw error

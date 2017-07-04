@@ -93,10 +93,6 @@ angular
             })
         }
 
-
-
-
-
         $scope.viewScan = function(ev, scan) {
             $rootScope.scan = scan;
                 $mdDialog.show({
@@ -122,8 +118,6 @@ angular
                     'token': $sessionStorage.token
                 }
             }
-            $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-            $scope.data = [300, 500, 100];
 
             $http(groupsReq).success(function(data) {
                 $scope.scanresults = data.data;
