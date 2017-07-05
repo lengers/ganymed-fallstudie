@@ -1,0 +1,148 @@
+<md-dialog aria-label="Device hinzufügen" flex=60>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Device hinzufügen</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon md-svg-src="assets/img/close.svg" aria-label="Schließen"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <md-content layout-padding="">
+            <form name="deviceForm">
+                <div layout="column">
+
+                    <div layout-gt-sm="row" flex min-width="500px">
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Device-Name</label>
+                            <input required="" type="text" name="name" placeholder='Device-Name' ng-model="device.name">
+
+                            <div ng-messages="deviceForm.mac.$error">
+                                <div ng-message="required">Ein Device-Name wird benötigt.</div>
+                            </div>
+                        </md-input-container>
+
+
+                        <div flex="5" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>IP-Adresse</label>
+                            <input required="" name="ip" ng-model="device.ip" placeholder="0.0.0.0" ng-pattern=ipRegex>
+
+                            <div ng-messages="deviceForm.ip.$error">
+                                <div ng-message="required">Eine IP wird benötigt.</div>
+                                <div ng-message="default">Diese IP ist bereits belegt.</div>
+                                <div ng-message="pattern">Das sieht nicht wie eine IP-Adresse aus.</div>
+                            </div>
+                        </md-input-container>
+
+                    </div>
+
+                    <div flex="5" hide-xs="" hide-sm="">
+                        <!-- Spacer //-->
+                    </div>
+                    <div layout-gt-sm="row" flex min-width="500px">
+
+
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>MAC-Adresse</label>
+                            <input required="" type="text" name="mac" placeholder='00:00:00:00:00:00' ng-model="device.mac" ng-pattern=macRegex>
+
+                            <div ng-messages="deviceForm.mac.$error">
+                                <div ng-message="required">Eine MAC-Adresse wird benötigt.</div>
+                                <div ng-message="pattern">Das sieht nicht wie eine MAC-Adresse aus.</div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="5" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Dienste und Ports (getrennt durch Kommata)</label>
+                            <input required="" name="servicePortInput" ng-model="servicePort" placeholder="http:80, https:443" ng-pattern=serviceRegex>
+
+                            <div class="hint" ng-show="showHints">Dienste des Geräts und dazugehörige Ports</div>
+
+                            <div ng-messages="deviceForm.servicePortInput.$error">
+                                <div ng-message-exp="required">Ein Device muss mindestens einen erreichbaren Dienst anbieten.</div>
+                                <div ng-message="pattern">Das entspricht nicht dem erwarteten Muster.</div>
+                            </div>
+                        </md-input-container>
+
+                    </div>
+
+                    <div flex="5" hide-xs="" hide-sm="">
+                        <!-- Spacer //-->
+                    </div>
+
+                    <div layout-gt-sm="row" flex>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Hersteller</label>
+                            <input required="" type="text" name="manufacturer" placeholder='AVM' ng-model="device.manufacturer">
+                            <div ng-messages="deviceForm.manufacturer.$error">
+                                <div ng-message="required">Ein Hersteller muss angegeben werden.</div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="5" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Modell</label>
+                            <input required="" type="text" name="modell" placeholder='Fritz!Box 7490' ng-model="device.modell">
+
+                            <div ng-messages="deviceForm.modell.$error">
+                                <div ng-message="required">Ein Modell muss angegeben werden.</div>
+                            </div>
+                        </md-input-container>
+
+                    </div>
+
+                    <div flex="5" hide-xs="" hide-sm="">
+                        <!-- Spacer //-->
+                    </div>
+
+                    <div layout-gt-sm="row" flex>
+
+                        <md-input-container class="md-block" flex-gt-sm="">
+                            <label>Risikolevel</label>
+                            <input required="" type="number" name="risk" placeholder='1-10' min="1" max="10" ng-model="device.risk_level">
+
+                            <div ng-messages="deviceForm.risk.$error">
+                                <div ng-message="required">Ein Risiko-Level muss angegeben werden.</div>
+                                <div ng-message="min">Das Risiko-Level muss mindestes 1 oder größer sein.</div>
+                                <div ng-message="max">Das Risiko-Level darf maximal 10 oder kleiner sein.</div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="60" hide-xs="" hide-sm="">
+                            <!-- Spacer //-->
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </md-content>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="cancel()">
+            Abbrechen
+        </md-button>
+        <md-button ng-click="createDevice()" class="md-primary">
+            Device anlegen
+        </md-button>
+    </md-dialog-actions>
+    </form>
+</md-dialog>

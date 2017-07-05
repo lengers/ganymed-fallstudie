@@ -220,8 +220,8 @@ angular
                       password: $scope.newUser.password,
                       group: $scope.newUser.group,
                       settings: {
-                          receive_mails: $scope.newUser.receive_mails
-                        },
+                        receive_mails: $scope.newUser.receive_mails
+                      },
                       mail: $scope.newUser.mail,
                       notification_on: $scope.newUser.notification_on
                     }
@@ -244,8 +244,8 @@ angular
                       passwordConfirm: '',
                       group: '',
                       settings: {
-                          receive_mails: false
-                        },
+                        receive_mails: false
+                      },
                       mail: null,
                       notification_on: false
                     }

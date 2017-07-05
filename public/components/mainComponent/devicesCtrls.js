@@ -1,117 +1,133 @@
 'use strict'
 angular
-.module('devicesCtrls', ['ngMaterial', 'ngStorage'])
-.controller('devicesCtrl', function($scope, $rootScope, $http, $mdDialog, $sessionStorage, $localStorage) {
-
-    var imagePath = 'assets/img/device.png';
-
-
-    $scope.listofdev = [
-      {
-        pic : imagePath,
-        device: 'Ip-Kamera außen',
-        ip: '192.168.196.12',
-        manufactur: 'Pornhub Spycam GmbH',
-        port: ':8080',
-        risklevel: 'Hohes Risiko'
-      },
-      {
-        pic : imagePath,
-        device: 'Ip-Kamera innen',
-        ip: '192.168.196.13',
-        manufactur: 'Pornhub Spycam GmbH',
-        port: ':8080',
-        risklevel: 'Sehr niedriges Risiko',
-      },
-      {
-        pic : imagePath,
-        device: 'Heizungssteuerung',
-        ip: '192.168.196.14',
-        manufactur: 'IOT Boys',
-        port: ':8080',
-        risklevel: 'Kein Risiko',
-      },
-      {
-        pic : imagePath,
-        device: "Bad",
-        ip: '192.168.196.15',
-        manufactur: 'SpycamStream',
-        port: ':8080',
-        risklevel: 'Hohes Risiko',
-      }
-
-
-    ];
-
-    $scope.ip = ["192.168.19.12", "192.168.19.13", "192.168.19.14",null];
-    $scope.namen = ["Spycam Bad", "Kamera innen", "Kamera außen",null];
-    $scope.selectedItem1;
-    $scope.getSelectedTextIP = function() {
-           if ($scope.selectedItem1 !== undefined) {
-             return $scope.selectedItem1;
-           } else {
-             return "Wähle eine IP-Adresse";
-           }
-         };
-
-    $scope.selectedItem2;
-    $scope.getSelectedTextName = function() {
-                if ($scope.selectedItem2 !== undefined) {
-                  return $scope.selectedItem2;
-                } else {
-                  return "Wähle einen Namen";
-                }
-              };
-
-
-      $scope.items = ["Bad","Küche","Wohnzimmer","Außen","Innen","Wurst","Käse"];
-      $scope.selected = [];
-      $scope.toggle = function (item, list) {
-        var idx = list.indexOf(item);
-        if (idx > -1) {
-          list.splice(idx, 1);
-        }
-        else {
-          list.push(item);
-        }
-      };
-      $scope.exists = function (item, list) {
-        return list.indexOf(item) > -1;
-      };
-
+    .module('devicesCtrls', ['ngMaterial', 'ngStorage'])
+    .controller('devicesCtrl', function ($scope, $rootScope, $state, $http, $mdDialog, $sessionStorage, $localStorage) {
       let req = {
-          method: 'GET',
-          url: '/api/devices',
-          headers: {
-              'token': $sessionStorage.token
-          }
+        method: 'GET',
+        url: '/api/devices',
+        headers: {
+          'token': $sessionStorage.token
+        }
       }
-      // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
-      $http(req).success(function(data) {
-          $scope.devices = data.data;
-          console.log($scope.devices);
+        // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
+      $http(req).success(function (data) {
+        $scope.devices = data.data
       })
 
-      $scope.showAdvanced = function(ev,device) {
-        $rootScope.device = device
-      $mdDialog.show({
-        controller: DialogController,
-        templateUrl: '/components/mainComponent/dialogs/details.html',
-        parent: angular.element(document.body),
-        targetEvent: ev,
-        clickOutsideToClose:true,
-        hasBackdrop: false,
-        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
-      })
-    };
+      $scope.deleteDevice = function (ev, device) {
+        var confirm = $mdDialog.confirm()
+        .title('Ausgewähltes Device entfernen?')
+        .textContent('Alle Einträge zu diesem Gerät werden dauerhaft gelöscht.')
+        .ariaLabel('Device entfernen')
+        .targetEvent(ev)
+        .ok('Bestätigen')
+        .cancel('Abbrechen')
+        .hasBackdrop(false)
 
-      function DialogController($scope, $mdDialog) {
-        $scope.device = $rootScope.device
-       $scope.hide = function() {
-         $mdDialog.hide();
-       }};
-       
-       $scope.cancel = function() {
-           $mdDialog.cancel();
-       };
-});
+
+        $mdDialog.show(confirm).then(function () {
+            const deviceDeleteReq = {
+              method: 'DELETE',
+              url: '/api/devices/' + device.uuid,
+              headers: {
+                'token': $sessionStorage.token
+              }
+            }
+            $http(deviceDeleteReq).success(function (data) {
+                $state.reload()
+                $mdToast.show(
+                  $mdToast.simple()
+                  .textContent('Device entfernt.')
+                  .position('top right')
+                  .hideDelay(3000)
+                 )
+            })
+
+        }, function () {
+          // nothin' here
+        })
+      }
+
+
+
+
+
+      $scope.addDevice = function (ev) {
+        $mdDialog.show({
+          controller: addDeviceController,
+          templateUrl: '/components/mainComponent/dialogs/addDevice.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose: true,
+          hasBackdrop: false
+        })
+      }
+
+      function addDeviceController ($scope, $mdDialog, $mdToast, $state) {
+        $scope.cancel = function () {
+          $mdDialog.cancel()
+        }
+
+        $scope.serviceRegex = /[a-z]+:[0-9]+(?:,\s[a-z]+:[0-9]+)*/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
+        $scope.macRegex = '([A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+)'
+        $scope.ipRegex = '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)'
+        $scope.servicePort = ''
+        $scope.services = []
+        $scope.ports = []
+
+        $scope.device = {
+          'uuid': null,
+          'ip': null,
+          'mac': null,
+          'manufacturer': null,
+          'ports': null,
+          'risk_level': 0,
+          'services': null,
+          'name': null,
+          'modell': null
+        }
+
+        let uuid4 = function () {
+          return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            )
+        }
+
+        $scope.device.uuid = uuid4()
+
+        $scope.createDevice = function () {
+          console.log($scope.device)
+          let servicePortArr = $scope.servicePort.split(', ')
+          console.log(servicePortArr)
+          for (var i = 0; i < servicePortArr.length; i++) {
+            let splitArr = servicePortArr[i].split(':')
+            console.log(splitArr)
+            $scope.services.push(splitArr[0])
+            $scope.ports.push(splitArr[1])
+          }
+          $scope.device.ports = $scope.ports.join(', ')
+          $scope.device.services = $scope.services.join(', ')
+          console.log($scope.device)
+
+          // POST to /device/:uuid
+          const deviceAddReq = {
+            method: 'POST',
+            url: '/api/devices/' + $scope.device.uuid,
+            headers: {
+              'token': $sessionStorage.token
+            },
+            data: JSON.stringify($scope.device)
+          }
+          $http(deviceAddReq).success(function (data) {
+            $mdDialog.hide()
+            $state.reload()
+            $mdToast.show(
+              $mdToast.simple()
+              .textContent('Device erstellt.')
+              .position('top right')
+              .hideDelay(3000)
+             )
+          })
+        }
+      };
+    })

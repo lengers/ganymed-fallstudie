@@ -14,7 +14,7 @@ const mysql = require('mysql')
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'thenewbob1996',
+  password: 'mysqlpass',
   database: 'Ganymed'
 })
 
@@ -129,10 +129,10 @@ api
         })
       }
     })
-    .post('/devices', checkJwt, (req, res) => {
-      const createQuery = 'INSERT INTO device (uuid, ip, mac, ports, risk_level, services) VALUES (?, ?, ?, ?, ? , ?);'
+    .post('/devices/:uuid', checkJwt, (req, res) => {
+      const createQuery = 'INSERT INTO device (uuid, ip, mac, manufacturer, ports, risk_level, services, name, modell) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
       try {
-        connection.query(createQuery, [req.body.uuid, req.body.ip, req.body.mac, req.body.manufacturer, req.body.ports, req.body.risk_level, req.body.services, req.body.name, req.body.modell], (error, results, fields) => {
+        connection.query(createQuery, [req.params.uuid, req.body.ip, req.body.mac, req.body.manufacturer, req.body.ports, req.body.risk_level, req.body.services, req.body.name, req.body.modell], (error, results, fields) => {
           if (error) {
             res.status(500).json({
               status: 'error',

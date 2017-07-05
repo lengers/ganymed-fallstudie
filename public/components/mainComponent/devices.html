@@ -1,41 +1,43 @@
 <div flex ng-controller="devicesCtrl" class="md-padding" ng-cloak>
-  <div layout="row" layout-wrap>
-    <md-card flex="100" >
-    <div>
-      <md-content>
-         <div layout="row">
-           <div flex=33 >
-             <h4>Ip-Adressen</h4>
-           </div>
-           <div flex=33>
-             <h4>Risiko-Level</h4>
-           </div>
-           <div flex=33>
-             <h4>Mac-Adresse</h4>
-           </div>
-         </div>
-      </md-content>
+    <div layout="row" layout-wrap flex layout-align="center">
+        <div flex=10>
+        </div>
+        <div flex=80>
+            <md-card flex layout-align="center">
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Devices</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <md-list>
+                        <md-divider></md-divider>
+                        <md-list-item class="md-3-line" ng-repeat="device in devices" ng-click="showAdvanced($event, device)">
+                            <md-divider></md-divider>
+                            <div class="md-list-item-text" flex=30>
+                                <h3>{{ device.ip }}</h3>
+                                <p>IP-Adresse</p>
+                            </div>
+
+                            <div class="md-list-item-text" flex=30>
+                                <h3>{{ device.risk_level }}</h3>
+                                <p>Risiko-Level</p>
+                            </div>
+
+                            <div class="md-list-item-text" flex=30>
+                                <h3>{{ device.mac }}</h3>
+                                <p>MAC-Adresse</p>
+                            </div>
+                            <md-icon md-svg-src="/assets/img/clear_black.svg" ng-click="deleteDevice($event, device)" aria-label="Device löschen" class="md-secondary md-hue-3"></md-icon>
+                        </md-list-item>
+                    </md-list>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-raised" ng-click="addDevice()">Gerät hinzufügen</md-button>
+                </md-card-actions>
+            </md-card>
+        </div>
+        <div flex=10>
+        </div>
     </div>
-        <md-divider></md-divider>
-        <md-list flex>
-         <md-list-item class="md-3-line" ng-repeat="device in devices" ng-click="showAdvanced($event, device)">
-           <!-- <img ng-src="{{item.pic}}" class="md-avatar" /> -->
-
-           <div class="md-list-item-text" flex=30>
-             <h3>{{ device.ip }}</h3>
-           </div>
-
-           <div class="md-list-item-text" flex=30>
-             <h3>{{ device.risk_level }}</h3>
-           </div>
-
-           <div class="md-list-item-text" flex=30>
-             <h3>{{ device.mac }}</h3>
-           </div>
-
-         </md-list-item>
-       </md-list>
-
- </md-card>
-</div>
 </div>
