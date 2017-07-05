@@ -8,11 +8,9 @@
                     </md-card-title-text>
                 </md-card-title>
                 <md-card-content flex=100>
-                    <div flex></div>
-                    <span style="width: 100%;text-align: center">
+                    <span style="text-align: center">
                     <h1 ng-style="customStyle.style">{{overallRisk}}</h1>
                 </span>
-                    <div flex></div>
                 </md-card-content>
             </md-card>
         </div>
@@ -28,7 +26,7 @@
                         <span class="md-headline">Letzter Scan</span>
                     </md-card-title-text>
                 </md-card-title>
-                <md-card-content>
+                <!-- <md-card-content> -->
                     <md-list>
                         <md-divider></md-divider>
                         <md-list-item class="md-3-line">
@@ -56,7 +54,6 @@
                         </md-list-item>
                         <md-divider></md-divider>
                         <md-list-item class="md-3-line">
-                            <md-divider></md-divider>
                             <div class="md-list-item-text" flex="40">
                                 <p>
                                     <h3>Festgestelltes Risiko:</h3></p>
@@ -67,12 +64,12 @@
                             </div>
                         </md-list-item>
                         <md-list>
-                </md-card-content>
+                <!-- </md-card-content> -->
             </md-card>
         </div>
     </div>
 
-    <div layout-gt-sm="row" layout-align="center">
+    <div layout-gt-sm="row" layout-align="center" flex>
         <div layout-gt-sm="column" flex=30>
             <md-card flex>
                 <md-card-title>
@@ -151,179 +148,3 @@
             </div>
         </div>
 </md-content>
-
-<!--
-<md-content class="layout-row" layout-align="center start" flex>
-    <div flex="5" hide-xs="" hide-sm="">
-    </div>
-
-    <md-content flex="80">
-        <md-content layout-padding="">
-            <md-content layout="row">
-                <md-content layout-gt-sm="column" flex=40>
-                    <md-card flex>
-                        <md-card-title class="layout-column">
-                            <md-card-title-text class="layout-column" flex=20>
-                                <span class="md-headline">Risiko Gesamt</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <md-content flex>
-                            <p></p>
-                        <span style="width: 100%;text-align: center">
-                            <h1 style="margin-bottom: 20px; margin-top: 20px;" layout-align="center center">{{overallRisk}}</h1>
-                        </span>
-                        <p></p>
-                    </md-content>
-                    </md-card>
-                </md-content>
-
-                <md-content layout-gt-sm="column" flex=60>
-                    <md-card flex>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">Letzter Scan</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <md-list>
-                            <md-divider></md-divider>
-                            <md-list-item class="md-3-line">
-                                <md-divider></md-divider>
-                                <div class="md-list-item-text" flex="40">
-                                    <p>
-                                        <h3>Gestartet um:</h3></p>
-                                </div>
-                                <div class="md-list-item-text" flex="60">
-                                    <p>
-                                        <h3>{{scan.start_time}}</h3></p>
-                                </div>
-                            </md-list-item>
-                            <md-divider></md-divider>
-                            <md-list-item class="md-3-line">
-                                <md-divider></md-divider>
-                                <div class="md-list-item-text" flex="40">
-                                    <p>
-                                        <h3>Gestartet von User:</h3></p>
-                                </div>
-                                <div class="md-list-item-text" flex="60">
-                                    <p>
-                                        <h3>{{scan.started_by_user}}</h3></p>
-                                </div>
-                            </md-list-item>
-                            <md-divider></md-divider>
-                            <md-list-item class="md-3-line">
-                                <md-divider></md-divider>
-                                <div class="md-list-item-text" flex="40">
-                                    <p>
-                                        <h3>Festgestelltes Risiko:</h3></p>
-                                </div>
-                                <div class="md-list-item-text" flex="60">
-                                    <p>
-                                        <h3>{{scan.risk_level}}</h3></p>
-                                </div>
-                            </md-list-item>
-                            <md-list>
-                    </md-card>
-                </md-content>
-            </md-content>
-
-            <md-content layout="row">
-                <md-content layout-gt-sm="column" flex=40>
-                    <md-card flex>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">Risiko Verteilt</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <p></p>
-                        <canvas id="doughnut" class="chart chart-doughnut" chart-data="risk.count" chart-labels="risk.risks" chart-series="risk.series">
-                        </canvas>
-                        <p></p>
-                    </md-card>
-                </md-content>
-
-                <md-content layout-gt-sm="column" flex=60>
-                    <md-content layout-gt-sm="row" flex>
-                        <md-card flex>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Scans einsehen</span>
-                                </md-card-title-text>
-                            </md-card-title>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button class="md-raised md-primary">Scans einsehen</md-button>
-                            </md-content>
-                        </md-card>
-                        <md-card flex>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Devices einsehen</span>
-                                </md-card-title-text>
-                            </md-card-title>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button class="md-raised md-primary">Devices einsehen</md-button>
-                            </md-content>
-                        </md-card>
-
-                    </md-content>
-                    <md-content layout-gt-sm="row" flex>
-                        <md-card flex>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Online-Hilfe</span>
-                                </md-card-title-text>
-                            </md-card-title>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button class="md-raised md-primary">Online-Hilfe</md-button>
-                            </md-content>
-                        </md-card>
-                        <md-card flex>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">FAQ</span>
-                                </md-card-title-text>
-                            </md-card-title>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button class="md-raised md-primary">FAQ</md-button>
-                            </md-content>
-                        </md-card>
-                    </md-content>
-                    <!--
-                    <md-card flex>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">Aktionen</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <md-content layout-gt-sm="column" flex>
-                        <md-content layout-gt-sm="row" flex>
-                            <md-content layout-gt-sm="column" flex>
-                                <md-button md-no-ink class="md-primary">Primary (md-noink)</md-button>
-                            </md-content>
-                            <md-content layout-gt-sm="column" flex>
-                                <md-button class="md-raised md-primary">Primary</md-button>
-                            </md-content>
-                        </md-content>
-
-                        <div flex="20" hide-xs="" hide-sm="">
-                            <!-- Spacer //-->
-<!-- </div>
-
-                        <md-content layout-gt-sm="row" flex layout-align="space-around center">
-                            <md-content layout-gt-sm="column" flex>
-                                <md-button md-no-ink class="md-primary">Primary (md-noink)</md-button>
-                            </md-content>
-                            <md-content layout-gt-sm="column" flex>
-                                <md-button class="md-raised md-primary">Primary</md-button>
-                            </md-content>
-                        </md-content>
-                    </md-content>
-                    </md-card>
-                </md-content> -->
-<!--    </md-content>
-
-            </md-content>
-        </md-content>
-
-        <div flex="5" hide-xs="" hide-sm="">
-        </div>
-    </md-content> -->

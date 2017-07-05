@@ -25,13 +25,18 @@ angular
               url: 'account'
             })
             .state('main.account.admin', {
-                templateUrl: '/components/mainComponent/userMgmtAdmin.html',
-                controller: 'userMgmtAdminCtrl',
-                url: ''
+              templateUrl: '/components/mainComponent/userMgmtAdmin.html',
+              controller: 'userMgmtAdminCtrl',
+              url: ''
             })
             .state('main.scan', {
-                templateUrl: '/components/mainComponent/scan.html',
-                controller: 'scanCtrl',
-                url: 'scans'
+              templateUrl: '/components/mainComponent/scan.html',
+              controller: 'scanCtrl',
+              url: 'scans'
+            })
+            .state('main.insights', {
+              templateUrl: '/components/mainComponent/insights.html',
+              controller: 'insightsCtrl',
+              url: 'insights'
             })
     }])

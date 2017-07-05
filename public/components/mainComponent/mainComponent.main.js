@@ -4,7 +4,8 @@ angular.module('mainComponent.main', [
   'overviewCtrls',
   'userMgmtCtrls',
   'scanCtrls',
+  'insightsCtrls',
   'userMgmtAdminCtrls',
   'mainComponentCtrls',
   'mainComponentRoutes'
-]);
+])

@@ -3,7 +3,7 @@ const api = express.Router()
 
 const fs = require('fs')
 const path = require('path')
-
+const request = require('request')
 const uuid = require('uuid')
 
 const jwt = require('jsonwebtoken')
@@ -420,42 +420,17 @@ api
     })
     .get('/scan/results/:uuid', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
-      if (scanUuid !== req.params.uuid) {
-        try {
-          const createQuery = 'SELECT * FROM scan WHERE scan_no = ?;'
-          connection.query(createQuery, [req.params.uuid], (error, results, fields) => {
-            if (error) {
-              throw error
-            }
-            const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
-            fs.readFile(scanpath, (err, scanresults) => {
-              if (err) throw err
-                        // Send answer
-              res.status(200).json({
-                status: 'ok',
-                data: {
-                  uuid: req.params.uuid,
-                  results: JSON.parse(scanresults)
-                }
-              })
-            })
-          })
-        } catch (e) {
-          res.status(424).json({
-            status: 'error',
-            data: 'No scan with matching UUID found.'
-          })
-        }
-      } else {
+      console.log(scanUuid)
+      if (scanUuid === req.params.uuid) {
+        console.log(req.params.uuid)
         if (scanPercent < 100) {
           res.status(423).json({
             status: 'error',
             data: 'The specified scan is not yet finished.'
           })
         } else {
-                // Write scan info to DB
+          // Write scan info to DB
           try {
-                    // Create new user
             const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
             connection.query(createQuery, [scanUuid, scanStartISO, req.headers.decoded.name, 120, 4], (error, results, fields) => {
               if (error) {
@@ -463,16 +438,20 @@ api
                 throw error
               }
               console.log(results)
-              // Read scan results from file
-              const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'scan.json')
-              fs.readFile(scanpath, (err, scanresults) => {
-                if (err) throw err
-                          // Send answer
+
+        // get forged scan results
+              request.get('http://localhost:7777/scanforge', function (error, response, body) {
+                if (error) throw error
+                console.log(body)
+                const resultFilePath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', scanUuid + '.json')
+                fs.writeFile(resultFilePath, JSON.parse(body.data), (err) => {
+                  if (err) throw err
+                })
                 res.status(200).json({
                   status: 'ok',
                   data: {
                     uuid: req.params.uuid,
-                    results: JSON.parse(scanresults)
+                    results: JSON.parse(body.data)
                   }
                 })
               })
@@ -484,6 +463,39 @@ api
               data: 'Something went wrong connecting to the database.'
             })
           }
+        }
+      } else {
+        try {
+          const createQuery = 'SELECT * FROM scan WHERE scan_no = ?;'
+          connection.query(createQuery, [req.params.uuid], (error, results, fields) => {
+            if (error) {
+              throw error
+            }
+            if (results.length > 0) {
+              const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', req.params.uuid + '.json')
+              fs.readFile(scanpath, (err, scanresults) => {
+                if (err) throw err
+                          // Send answer
+                res.status(200).json({
+                  status: 'ok',
+                  data: {
+                    uuid: req.params.uuid,
+                    results: JSON.parse(scanresults)
+                  }
+                })
+              })
+            } else {
+              res.status(424).json({
+                status: 'error',
+                data: 'No scan with matching UUID found.'
+              })
+            }
+          })
+        } catch (e) {
+          res.status(424).json({
+            status: 'error',
+            data: 'No scan with matching UUID found.'
+          })
         }
       }
     })

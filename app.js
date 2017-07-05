@@ -1,4 +1,3 @@
-const exampleModule = require('./components/exampleModule.js')
 const config = require('./components/config/express.json')
 const express = require('express')
 const app = express()

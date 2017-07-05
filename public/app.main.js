@@ -14,6 +14,6 @@ angular
       $mdThemingProvider
       .theme('default')
       .primaryPalette('blue-grey')
-      .accentPalette('indigo');
+      .accentPalette('indigo')
       $urlRouterProvider.otherwise('/') // if the user types some gibberish for an url he gets redirected to this page
     }])

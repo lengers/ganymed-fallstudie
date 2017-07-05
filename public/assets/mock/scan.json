@@ -16,6 +16,15 @@
                 "services": "http, https",
                 "ports": "80, 443"
             },
+            "vulnerabilities":[
+                {"type": "firmware",
+                "issue": "outdated",
+                "service": [
+                    "http", "https"
+                ],
+                "solution": "update",
+                "link": "https://manufacturer1.com/support/IPCam/firmware"}
+            ],
             "osNmap": "Linux",
             "risk": 3,
             "catergory": "camera"
@@ -37,6 +46,7 @@
                 "services": "telnet, http",
                 "ports": "223, 8080"
             },
+            "vulnerabilities":[],
             "osNmap": "Unknown",
             "risk": 2,
             "catergory": "security"
@@ -58,6 +68,13 @@
                 "services": "http, snmp",
                 "ports": "80, 161"
             },
+            "vulnerabilities":[
+                {"type": "traffic",
+                "issue": "malicious",
+                "service": ["http"],
+                "solution": "disconnect",
+                "link": "https://avm.de/service/fritzbox/fritzbox-7390/wissensdatenbank/publication/show/894_Automatische-Portfreigaben-einrichten/"}
+            ],
             "osNmap": "Linux",
             "risk": 8,
             "catergory": "information"
@@ -79,6 +96,13 @@
                 "services": "http, snmp",
                 "ports": "80, 161"
             },
+            "vulnerabilities":[
+                {"type": "firmware",
+                "issue": "outdated",
+                "service": ["snmp"],
+                "solution": "update",
+                "link": "https://iot.gas-wasser-scheisse-schmitz.com/support/Heizkessel/firmware"}
+            ],
             "osNmap": "Linux",
             "risk": 3,
             "catergory": "infrastructre"
@@ -92,6 +116,10 @@
         "risks": {
             "risks": [2, 3, 8],
             "count": [1, 2, 1]
+        },
+        "vulnerabilities": {
+            "services": ["http", "https", "snmp"],
+            "count": [2, 1, 1]
         }
     },
     "overallRisk": 4

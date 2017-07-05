@@ -36,12 +36,12 @@ CREATE TABLE device (
     uuid VARCHAR(50) PRIMARY KEY,
     ip VARCHAR(128) NOT NULL,
     mac VARCHAR(64) NOT NULL,
-    manufacturer VARCHAR(50) NOT NULL,
+    manufacturer VARCHAR(50),
     ports VARCHAR(20) NOT NULL,
     risk_level INT NOT NULL,
     services VARCHAR(50) NOT NULL,
     name VARCHAR(50) NOT NULL,
-    modell VARCHAR(50) NOT NULL
+    modell VARCHAR(50)
 );
 
 INSERT INTO `group`(Group_id, alter_device_list, run_scan, create_user, change_group) VALUES ('admin', true , true, true, true);
@@ -50,6 +50,6 @@ INSERT INTO `group`(Group_id, alter_device_list, run_scan, create_user, change_g
 INSERT INTO `user` (username, `hash`, `group`) VALUES ("admin", "$2a$10$9B3aQ.iG8ekCH34yiIt9k.8D.EdMDIyMYenQRYr.sMsyzyA0B38p.", "admin");
 
 
-INSERT INTO device (uuid, ip, mac, ports, risk_level, services) VALUES ("4c9a6f10-b862-44a0-89d6-a7e6f7fce535", "10.0.0.100", "E8:90:58:1B:89:9C", "80, 443", 2, "http, https");
-INSERT INTO device (uuid, ip, mac, ports, risk_level, services) VALUES ("89e75cab-3c34-4153-a3ef-a14b33ecdb45", "10.0.0.72", "B9:7D:7C:5E:97:8E", "223, 8080", 9, "telnet, http");
-INSERT INTO device (uuid, ip, mac, ports, risk_level, services) VALUES ("e3116146-5af4-4dee-b455-87e16e050841", "10.0.0.112", "8A:A3:B2:FB:E2:CD", "80, 161", 1, "http, snmp");
+INSERT INTO device (uuid, ip, mac, ports, risk_level, services, name) VALUES ("4c9a6f10-b862-44a0-89d6-a7e6f7fce535", "10.0.0.100", "E8:90:58:1B:89:9C", "80, 443", 2, "http, https", "IPCam Garage");
+INSERT INTO device (uuid, ip, mac, ports, risk_level, services, name) VALUES ("89e75cab-3c34-4153-a3ef-a14b33ecdb45", "10.0.0.72", "B9:7D:7C:5E:97:8E", "23, 8080", 9, "telnet, http", "Feuermelder Erdgeschoss");
+INSERT INTO device (uuid, ip, mac, ports, risk_level, services, name) VALUES ("e3116146-5af4-4dee-b455-87e16e050841", "10.0.0.112", "8A:A3:B2:FB:E2:CD", "80, 161", 1, "http, snmp", "Heizkessel");
