@@ -40,7 +40,7 @@ CREATE TABLE device (
     ports VARCHAR(20) NOT NULL,
     risk_level INT NOT NULL,
     services VARCHAR(50) NOT NULL,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50),
     modell VARCHAR(50)
 );
 

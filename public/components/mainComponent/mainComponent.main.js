@@ -3,9 +3,10 @@ angular.module('mainComponent.main', [
   'loginCtrls',
   'overviewCtrls',
   'userMgmtCtrls',
-  'scanCtrls',
-  'insightsCtrls',
   'userMgmtAdminCtrls',
+  'scanCtrls',
+  'devicesCtrls',
+  'insightsCtrls',
   'mainComponentCtrls',
   'mainComponentRoutes'
 ])

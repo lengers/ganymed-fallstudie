@@ -39,4 +39,9 @@ angular
               controller: 'insightsCtrl',
               url: 'insights'
             })
+            .state('main.devices', {
+                templateUrl: '/components/mainComponent/devices.html',
+                controller: 'devicesCtrl',
+                url: 'devices'
+            })
     }])
