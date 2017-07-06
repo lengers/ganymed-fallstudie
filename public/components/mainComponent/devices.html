@@ -12,7 +12,7 @@
                 <md-card-content>
                     <md-list>
                         <md-divider></md-divider>
-                        <md-list-item class="md-3-line" ng-repeat="device in devices" ng-click="showAdvanced($event, device)">
+                        <md-list-item class="md-3-line" ng-repeat="device in devices" ng-click="viewDevice($event, device)">
                             <md-divider></md-divider>
                             <div class="md-list-item-text" flex=30>
                                 <h3>{{ device.ip }}</h3>

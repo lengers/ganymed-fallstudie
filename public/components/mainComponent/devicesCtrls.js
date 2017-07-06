@@ -16,41 +16,66 @@ angular
 
       $scope.deleteDevice = function (ev, device) {
         var confirm = $mdDialog.confirm()
-        .title('Ausgewähltes Device entfernen?')
-        .textContent('Alle Einträge zu diesem Gerät werden dauerhaft gelöscht.')
-        .ariaLabel('Device entfernen')
-        .targetEvent(ev)
-        .ok('Bestätigen')
-        .cancel('Abbrechen')
-        .hasBackdrop(false)
-
+                .title('Ausgewähltes Device entfernen?')
+                .textContent('Alle Einträge zu diesem Gerät werden dauerhaft gelöscht.')
+                .ariaLabel('Device entfernen')
+                .targetEvent(ev)
+                .ok('Bestätigen')
+                .cancel('Abbrechen')
+                .hasBackdrop(false)
 
         $mdDialog.show(confirm).then(function () {
-            const deviceDeleteReq = {
-              method: 'DELETE',
-              url: '/api/devices/' + device.uuid,
-              headers: {
-                'token': $sessionStorage.token
-              }
+          const deviceDeleteReq = {
+            method: 'DELETE',
+            url: '/api/devices/' + device.uuid,
+            headers: {
+              'token': $sessionStorage.token
             }
-            $http(deviceDeleteReq).success(function (data) {
-                $state.reload()
-                $mdToast.show(
-                  $mdToast.simple()
-                  .textContent('Device entfernt.')
-                  .position('top right')
-                  .hideDelay(3000)
-                 )
-            })
-
+          }
+          $http(deviceDeleteReq).success(function (data) {
+            $state.reload()
+            $mdToast.show(
+                        $mdToast.simple()
+                        .textContent('Device entfernt.')
+                        .position('top right')
+                        .hideDelay(3000)
+                    )
+          })
         }, function () {
-          // nothin' here
+                // nothin' here
         })
       }
 
+      $scope.viewDevice = function (ev, device) {
+        $rootScope.device = device.uuid
+        $mdDialog.show({
+          controller: viewDeviceController,
+          templateUrl: '/components/mainComponent/dialogs/viewDevice.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose: true,
+          hasBackdrop: false
+        })
+      }
 
+      function viewDeviceController ($scope, $mdDialog, $rootScope) {
+        $scope.deviceID = $rootScope.device
 
+        $scope.cancel = function () {
+          $mdDialog.cancel()
+        }
 
+        const deviceReq = {
+          method: 'GET',
+          url: '/api/devices/' + $scope.deviceID,
+          headers: {
+            'token': $sessionStorage.token
+          }
+        }
+        $http(deviceReq).success(function (data) {
+          $scope.device = data.data[0]
+        })
+      }
 
       $scope.addDevice = function (ev) {
         $mdDialog.show({
@@ -89,8 +114,8 @@ angular
 
         let uuid4 = function () {
           return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            )
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                )
         }
 
         $scope.device.uuid = uuid4()
@@ -109,7 +134,7 @@ angular
           $scope.device.services = $scope.services.join(', ')
           console.log($scope.device)
 
-          // POST to /device/:uuid
+                // POST to /device/:uuid
           const deviceAddReq = {
             method: 'POST',
             url: '/api/devices/' + $scope.device.uuid,
@@ -122,11 +147,11 @@ angular
             $mdDialog.hide()
             $state.reload()
             $mdToast.show(
-              $mdToast.simple()
-              .textContent('Device erstellt.')
-              .position('top right')
-              .hideDelay(3000)
-             )
+                $mdToast.simple()
+                .textContent('Device erstellt.')
+                .position('top right')
+                .hideDelay(3000)
+            )
           })
         }
       };

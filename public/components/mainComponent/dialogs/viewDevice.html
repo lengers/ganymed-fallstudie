@@ -1,8 +1,12 @@
-<md-dialog aria-label="Detailansicht des Geräts" flex=40>
-
+<md-dialog aria-label="Device {{device.ip}}" flex=40 max-height='80%'>
+    <style>
+        .active {
+            background-color: #B0DBE1;
+        }
+    </style>
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Detailansicht des Geräts</h2>
+            <h2>Scan {{scanresults.uuid}}</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <md-icon md-svg-src="assets/img/close.svg" aria-label="Schließen"></md-icon>
@@ -12,72 +16,99 @@
 
     <md-dialog-content>
         <md-content layout-padding="">
-            <div ng-controller="devicesCtrl">
-                <div layout="column">
-                    <div layout="row">
-                        <div flex=30>
-                            <h4>Name:</h4>
-                        </div>
-                        <div flex=70>
-                            <h4>{{device.name}}</h4>
-                        </div>
-                    </div>
+
+            <md-list>
+                <md-list-item class="md-3-line">
                     <md-divider></md-divider>
-                    <div layout="row">
-                        <div flex=30>
-                            <h4>IP:</h4>
-                        </div>
-                        <div flex=70>
-                            <h4>{{device.ip}}</h4>
-                        </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>IP-Adresse</h3>
+                        <p>Netzwerk-Adresse</p>
                     </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.ip }}</h3>
+                    </div>
+                </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item class="md-3-line">
                     <md-divider></md-divider>
-                    <div layout="row">
-                        <div flex=30>
-                            <h4>Ports:</h4>
-                        </div>
-                        <div flex=70>
-                            <h4>{{device.ports}}</h4>
-                        </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>MAC-Adresse</h3>
+                        <p>Hardware-Adresse</p>
                     </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.mac }}</h3>
+                    </div>
+                </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item class="md-3-line">
                     <md-divider></md-divider>
-                    <div layout="row">
-                        <div flex=30>
-                            <h4>Risk-Level:</h4>
-                        </div>
-                        <div flex=70>
-                            <h4>{{device.risk_level}}</h4>
-                        </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>UUID</h3>
+                        <p>ID zur eindeutigen Identifizerung</p>
                     </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.uuid }}</h3>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-3-line">
                     <md-divider></md-divider>
-                    <div layout="row">
-                        <div flex=30>
-                            <h4>Mac:</h4>
-                        </div>
-                        <div flex=70>
-                            <h4>{{device.mac}}</h4>
-                        </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>Ports</h3>
+                        <p>Offene Netzwerk-Ports</p>
                     </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.ports }}</h3>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-3-line">
                     <md-divider></md-divider>
-                    <div layout="row">
-                        <div flex=30>
-                            <h4>Services:</h4>
-                        </div>
-                        <div flex=70>
-                            <h4>{{device.services}}</h4>
-                        </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>Services</h3>
+                        <p>Aktive Netzwerkdienste</p>
                     </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.services }}</h3>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-3-line">
                     <md-divider></md-divider>
-                    <div layout="row">
-                        <div flex=30>
-                            <h4>UUID:</h4>
-                        </div>
-                        <div flex=70>
-                            <h4>{{device.uuid}}</h4>
-                        </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>Risiko-Level</h3>
+                        <p>Auf einer Skala von 1 bis 10</p>
                     </div>
-                </div>
-            </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.risk_level }}</h3>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-3-line">
+                    <md-divider></md-divider>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>Hersteller</h3>
+                        <p>Produkthersteller, falls bekannt</p>
+                    </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.manufacturer }}</h3>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-3-line">
+                    <md-divider></md-divider>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>Modell</h3>
+                        <p>Produktmodell, falls bekannt</p>
+                    </div>
+                    <div class="md-list-item-text" flex=50>
+                        <h3>{{ device.modell }}</h3>
+                    </div>
+                </md-list-item>
+            </md-list>
+
         </md-content>
     </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="cancel()">
+            Schließen
+        </md-button>
+    </md-dialog-actions>
 </md-dialog>
