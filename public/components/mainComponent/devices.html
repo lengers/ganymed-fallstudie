@@ -28,6 +28,7 @@
                                 <h3>{{ device.mac }}</h3>
                                 <p>MAC-Adresse</p>
                             </div>
+                            <md-icon md-svg-src="/assets/img/build_black.svg" ng-click="editDevice($event, device)" aria-label="Device bearbeiten" class="md-secondary md-hue-3"></md-icon>
                             <md-icon md-svg-src="/assets/img/clear_black.svg" ng-click="deleteDevice($event, device)" aria-label="Device löschen" class="md-secondary md-hue-3"></md-icon>
                         </md-list-item>
                     </md-list>

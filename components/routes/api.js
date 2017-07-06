@@ -153,6 +153,30 @@ api
         })
       }
     })
+    .put('/devices/:uuid', checkJwt, (req, res) => {
+      const createQuery = 'UPDATE device SET uuid = ?, ip = ?, mac = ?, manufacturer = ?, ports = ?, risk_level = ?, services = ?, name = ?, modell = ? WHERE uuid = ?;'
+      try {
+        connection.query(createQuery, [req.params.uuid, req.body.ip, req.body.mac, req.body.manufacturer, req.body.ports, req.body.risk_level, req.body.services, req.body.name, req.body.modell, req.params.uuid], (error, results, fields) => {
+          if (error) {
+            res.status(500).json({
+              status: 'error',
+              error: error
+            })
+            throw error
+          } else {
+            res.status(200).json({
+              status: 'ok',
+              data: 'The device was updated.'
+            })
+          }
+        })
+      } catch (e) {
+        res.status(500).json({
+          status: 'error',
+          error: 'The device does not exist.'
+        })
+      }
+    })
     .delete('/devices/:uuid', checkJwt, (req, res) => {
       const createQuery = 'DELETE FROM device WHERE uuid = ?;'
       try {

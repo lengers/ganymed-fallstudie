@@ -1,8 +1,8 @@
 'use strict'
 angular
-    .module('navbarCtrls', ['ngMaterial'])
-    .controller('navbarCtrl', ['$scope', '$timeout', '$mdSidenav', '$log', '$mdDialog', '$mdMedia', '$rootScope', 'watcherDebugService',
-      function ($scope, $timeout, $mdSidenav, $log, $mdDialog, $mdMedia, $rootScope, watcherDebugService) {
+    .module('navbarCtrls', ['ngMaterial', 'ngStorage'])
+    .controller('navbarCtrl', ['$scope', '$timeout', '$mdSidenav', '$log', '$mdDialog', '$sessionStorage', '$localStorage', '$state', '$mdMedia', '$rootScope', 'watcherDebugService',
+      function ($scope, $timeout, $mdSidenav, $state, $log, $mdDialog, $mdMedia, $rootScope, $sessionStorage, $localStorage, watcherDebugService) {
                 // closes the sidenav
         $scope.close = function () {
           $mdSidenav('left').close()
@@ -14,7 +14,11 @@ angular
           toggleFullscreenButton()
         }
 
-        console.log('test')
+        $scope.logout = () => {
+            $mdSidenav('left').close()
+            $sessionStorage.token = null
+            $state.go('login')
+        }
 
                 // well... the main title
         $scope.mainTitle = 'Ganymed'
@@ -40,8 +44,8 @@ angular
         function buildDelayedToggler (navID) {
           return debounce(function () {
             $mdSidenav(navID)
-                            .toggle()
-                            .then(function () {})
+                .toggle()
+                .then(function () {})
           }, 200)
         };
       }

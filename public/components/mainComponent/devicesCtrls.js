@@ -93,6 +93,9 @@ angular
           $mdDialog.cancel()
         }
 
+        $scope.caption = 'hinzufügen'
+        $scope.action = 'Device anlegen'
+
         $scope.serviceRegex = /[a-z]+:[0-9]+(?:,\s[a-z]+:[0-9]+)*/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
         $scope.macRegex = '([A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+)'
         $scope.ipRegex = '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)'
@@ -119,6 +122,7 @@ angular
         }
 
         $scope.device.uuid = uuid4()
+        $scope.device.risk_level = Math.floor((Math.random() * 5) + 1)
 
         $scope.createDevice = function () {
           console.log($scope.device)
@@ -154,5 +158,79 @@ angular
             )
           })
         }
-      };
+      }
+
+      $scope.editDevice = function (ev, device) {
+        $rootScope.device = device
+        $mdDialog.show({
+          controller: editDeviceController,
+          templateUrl: '/components/mainComponent/dialogs/addDevice.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose: true,
+          hasBackdrop: false
+        })
+      }
+
+      function editDeviceController ($scope, $mdDialog, $mdToast, $state, $rootScope) {
+        $scope.cancel = function () {
+          $mdDialog.cancel()
+        }
+
+        $scope.caption = 'bearbeiten'
+        $scope.action = 'Änderungen speichern'
+
+        $scope.serviceRegex = /[a-z]+:[0-9]+(?:,\s[a-z]+:[0-9]+)*/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
+        $scope.macRegex = '([A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+)'
+        $scope.ipRegex = '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)'
+        $scope.servicePort = ''
+        $scope.services = []
+        $scope.ports = []
+
+        $scope.device = $rootScope.device
+        console.log($scope.device.services)
+        $scope.serviceArray = $scope.device.services.split(', ')
+        console.log($scope.device.ports)
+        $scope.portArray = $scope.device.ports.split(', ')
+        $scope.servicePortBuildArray = []
+        for (var ec = 0; ec < $scope.serviceArray.length; ec++) {
+            $scope.servicePortBuildArray.push($scope.serviceArray[ec] + ':' + $scope.portArray[ec])
+        }
+        console.log($scope.servicePortBuildArray)
+        $scope.servicePort = $scope.servicePortBuildArray.join(', ')
+        console.log($scope.servicePort)
+
+        $scope.createDevice = function () {
+          let servicePortArr = $scope.servicePort.split(', ')
+          for (var i = 0; i < servicePortArr.length; i++) {
+            let splitArr = servicePortArr[i].split(':')
+            $scope.services.push(splitArr[0])
+            $scope.ports.push(splitArr[1])
+          }
+          $scope.device.ports = $scope.ports.join(', ')
+          $scope.device.services = $scope.services.join(', ')
+
+          const deviceUpdateReq = {
+            method: 'PUT',
+            url: '/api/devices/' + $scope.device.uuid,
+            headers: {
+              'token': $sessionStorage.token
+            },
+            data: JSON.stringify($scope.device)
+          }
+          $http(deviceUpdateReq).success(function (data) {
+            $mdDialog.hide()
+            $state.reload()
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent('Änderungen gespeichert.')
+                .position('top right')
+                .hideDelay(3000)
+            )
+          })
+        }
+      }
+
+
+
     })

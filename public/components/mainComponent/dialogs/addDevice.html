@@ -1,7 +1,7 @@
-<md-dialog aria-label="Device hinzufügen" flex=60>
+<md-dialog aria-label="Device {{caption}}" flex=60>
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Device hinzufügen</h2>
+            <h2>Device {{caption}}</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <md-icon md-svg-src="assets/img/close.svg" aria-label="Schließen"></md-icon>
@@ -107,28 +107,6 @@
 
                     </div>
 
-                    <div flex="5" hide-xs="" hide-sm="">
-                        <!-- Spacer //-->
-                    </div>
-
-                    <div layout-gt-sm="row" flex>
-
-                        <md-input-container class="md-block" flex-gt-sm="">
-                            <label>Risikolevel</label>
-                            <input required="" type="number" name="risk" placeholder='1-10' min="1" max="10" ng-model="device.risk_level">
-
-                            <div ng-messages="deviceForm.risk.$error">
-                                <div ng-message="required">Ein Risiko-Level muss angegeben werden.</div>
-                                <div ng-message="min">Das Risiko-Level muss mindestes 1 oder größer sein.</div>
-                                <div ng-message="max">Das Risiko-Level darf maximal 10 oder kleiner sein.</div>
-                            </div>
-                        </md-input-container>
-
-                        <div flex="60" hide-xs="" hide-sm="">
-                            <!-- Spacer //-->
-                        </div>
-
-                    </div>
                 </div>
             </form>
         </md-content>
@@ -141,7 +119,7 @@
             Abbrechen
         </md-button>
         <md-button ng-click="createDevice()" class="md-primary">
-            Device anlegen
+            {{action}}
         </md-button>
     </md-dialog-actions>
     </form>
