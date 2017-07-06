@@ -232,12 +232,12 @@ angular
                     $mdDialog.hide(answer)
 
                     $mdToast.show(
-                                        $mdToast.simple()
-                                        .textContent('User erstellt.')
-                                        .position('top right')
-                                        .hideDelay(3000)
-                                    )
-                                    // Overwrite because root
+                        $mdToast.simple()
+                        .textContent('User erstellt.')
+                        .position('top right')
+                        .hideDelay(3000)
+                    )
+                    // Overwrite because root
                     $scope.newUser = {
                       username: '',
                       password: '',

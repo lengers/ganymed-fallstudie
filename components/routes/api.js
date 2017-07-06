@@ -442,16 +442,16 @@ api
         // get forged scan results
               request.get('http://localhost:7777/scanforge', function (error, response, body) {
                 if (error) throw error
-                console.log(body)
+                console.log(JSON.parse(body).data)
                 const resultFilePath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', scanUuid + '.json')
-                fs.writeFile(resultFilePath, JSON.parse(body.data), (err) => {
+                fs.writeFile(resultFilePath, JSON.stringify(JSON.parse(body).data), (err) => {
                   if (err) throw err
                 })
                 res.status(200).json({
                   status: 'ok',
                   data: {
                     uuid: req.params.uuid,
-                    results: JSON.parse(body.data)
+                    results: JSON.parse(body).data
                   }
                 })
               })

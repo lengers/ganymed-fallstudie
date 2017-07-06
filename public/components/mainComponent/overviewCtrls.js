@@ -1,7 +1,7 @@
 'use strict'
 angular
     .module('overviewCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
-    .controller('overviewCtrl', function ($scope, $state, $http, $rootScope, $localStorage, $sessionStorage) {
+    .controller('overviewCtrl', function ($scope, $state, $http, $rootScope, $mdToast, $localStorage, $sessionStorage) {
       $scope.$storage = $localStorage
 
       $scope.customStyle = {}
@@ -24,6 +24,27 @@ angular
 
       $scope.port = {}
       $scope.risk = {}
+
+      $scope.viewScans = () => {
+        $state.go('main.scan')
+      }
+
+      $scope.viewDevices = () => {
+        $state.go('main.devices')
+      }
+
+      $scope.viewInsights = () => {
+        $state.go('main.insights')
+      }
+
+      $scope.onlineHelp = () => {
+        $mdToast.show(
+          $mdToast.simple()
+          .textContent('Nicht in der Demo.')
+          .position('top right')
+          .hideDelay(3000)
+        )
+      }
 
       const scanReq = {
         method: 'GET',

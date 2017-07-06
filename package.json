@@ -1,5 +1,5 @@
 {
-  "name": "Angular-Skeleton",
+  "name": "Securiot-Ganymed",
   "version": "1.1.0",
   "description": "",
   "main": "app.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/trahloff/Angular-Skeleton.git"
+    "url": "git+https://github.com/lengerss/ganymed-fallstudie.git"
   },
-  "author": "Tobias Rahloff <rahloff@gmail.com>",
+  "author": "Leonard Engers <leonardengers@gmail.com>",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/trahloff/Angular-Skeleton/issues"
+    "url": "https://github.com/lengers/ganymed-fallstudie/issues"
   },
-  "homepage": "https://github.com/trahloff/Angular-Skeleton#readme",
+  "homepage": "https://github.com/lengers/ganymed-fallstudie#readme",
   "dependencies": {
     "angular": "1.5.1",
     "angular-animate": "1.5.8",
@@ -31,7 +31,6 @@
     "express": "^4.14.0",
     "hashmap": "2.1.0",
     "jsonwebtoken": "7.4.1",
-    "mariasql": "0.2.6",
     "mysql": "2.13.0",
     "ngstorage": "0.3.11",
     "uuid": "3.1.0"
