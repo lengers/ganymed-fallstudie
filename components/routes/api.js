@@ -205,30 +205,43 @@ api
     .post('/users/:username', checkJwtAdmin, (req, res) => {
       console.log(req.body)
         // Create password hash
-      const hash = bcrypt.hashSync(req.body.password, 10)
-      try {
-            // Create new user
-        const createQuery = 'INSERT INTO user (username, `hash`, `group`, settings, mail, notification_on) VALUES (?, ?, ?, ?, ?, ?);'
-        connection.query(createQuery, [req.params.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on], (error, results, fields) => {
-          if (error) {
+
+      const getUsersQuery = 'SELECT * FROM user;'
+      connection.query(getUsersQuery, (error, results, fields) => {
+        if (error) throw error
+        if (results.length >= 4) {
+          res.status(406).json({
+            status: 'error',
+            data: 'Your reached the maximum of users.'
+          })
+        } else {
+          const hash = bcrypt.hashSync(req.body.password, 10)
+
+          try {
+                    // Create new user
+            const createQuery = 'INSERT INTO user (username, `hash`, `group`, settings, mail, notification_on) VALUES (?, ?, ?, ?, ?, ?);'
+            connection.query(createQuery, [req.params.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on], (error, results, fields) => {
+              if (error) {
+                res.status(500).json({
+                  status: 'error',
+                  data: error
+                })
+                throw error
+              } else {
+                res.status(200).json({
+                  status: 'ok',
+                  data: 'The user was created.'
+                })
+              }
+            })
+          } catch (e) {
             res.status(500).json({
               status: 'error',
-              data: error
-            })
-            throw error
-          } else {
-            res.status(200).json({
-              status: 'ok',
-              data: 'The user was created.'
+              data: 'This user seems to already exist.'
             })
           }
-        })
-      } catch (e) {
-        res.status(500).json({
-          status: 'error',
-          data: 'This user seems to already exist.'
-        })
-      }
+        }
+      })
     })
     .put('/users/:username', checkJwtAdmin, (req, res) => {
       console.log(req.body)

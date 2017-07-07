@@ -1,8 +1,41 @@
 'use strict'
 angular
     .module('navbarCtrls', ['ngMaterial', 'ngStorage'])
-    .controller('navbarCtrl', ['$scope', '$timeout', '$mdSidenav', '$log', '$mdDialog', '$sessionStorage', '$localStorage', '$state', '$mdMedia', '$rootScope', 'watcherDebugService',
-      function ($scope, $timeout, $mdSidenav, $state, $log, $mdDialog, $mdMedia, $rootScope, $sessionStorage, $localStorage, watcherDebugService) {
+    .controller('navbarCtrl', function ($scope, $timeout, $mdSidenav, $http, $state, $log, $mdDialog, $mdMedia, $rootScope, $sessionStorage, $localStorage, watcherDebugService) {
+
+        $scope.checkAdmin = () => {
+            let req = {
+              method: 'GET',
+              url: '/api/auth/check',
+              headers: {
+                'token': $sessionStorage.token
+              }
+            }
+            $http(req).success(function (data) {
+                if (data.data.group === 'admin') {
+                    $state.go('main.account.admin')
+                    console.log('Should be admin')
+                } else {
+                    $state.go('main.account')
+                }
+            })
+        }
+
+        let req = {
+          method: 'GET',
+          url: '/api/auth/check',
+          headers: {
+            'token': $sessionStorage.token
+          }
+        }
+        $http(req).then(function (res, error) {
+          if (res.data.status != 'ok') {
+            $state.go('login')
+          }
+        })
+        console.log($scope.navbarAccountRoute)
+
+
                 // closes the sidenav
         $scope.close = function () {
           $mdSidenav('left').close()
@@ -49,4 +82,4 @@ angular
           }, 200)
         };
       }
-    ])
+    )

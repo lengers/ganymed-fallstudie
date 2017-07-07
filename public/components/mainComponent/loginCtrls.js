@@ -4,6 +4,7 @@ angular
     .controller('loginCtrl',
         function ($scope, $rootScope, $state, $http, $mdDialog, $mdMedia, $localStorage, $sessionStorage) {
             // defines empty user object
+
           $scope.user = {
             name: '',
             password: ''

@@ -69,6 +69,8 @@ angular
         }
       })
 
+      $scope.disallowNewUser = false
+
       $scope.updateUsersData = function (type) {
         var req = {
           method: 'GET',
@@ -80,6 +82,11 @@ angular
             // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
         $http(req).success(function (data) {
           $scope.users = data.data
+          if (data.data.length >= 4) {
+            $scope.disallowNewUser = true
+          } else {
+            $scope.disallowNewUser = false
+          }
           console.log($scope.users)
         })
       }

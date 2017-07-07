@@ -17,7 +17,7 @@
                     </span>
                 </h2>
                 <span flex></span>
-                <md-button class="md-icon-button" ui-sref="main.account" aria-label="Account">
+                <md-button class="md-icon-button" ng-click="checkAdmin()" aria-label="Account">
                     <md-icon md-svg-icon="assets/img/account.svg"></md-icon>
                 </md-button>
             </div>
@@ -38,7 +38,7 @@
                 <md-button ui-sref-active="active" ng-click="close()" layout-align=" center" style="text-align:left" ui-sref="main.scan">Scans</md-button>
                 <md-button ui-sref-active="active" ng-click="close()" layout-align=" center" style="text-align:left" ui-sref="main.devices">Devices</md-button>
                 <md-button ui-sref-active="active" ng-click="close()" layout-align=" center" style="text-align:left" ui-sref="main.insights">Insights</md-button>
-                <md-button ui-sref-active="active" ng-click="close()" layout-align=" center" style="text-align:left" ui-sref="main.account">Account</md-button>
+                <md-button ui-sref-active="active" ng-click="close(); checkAdmin()" layout-align=" center" style="text-align:left">Account</md-button>
 
             </div>
 

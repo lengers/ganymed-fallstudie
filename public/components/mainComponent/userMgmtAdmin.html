@@ -25,7 +25,7 @@
                 </md-list>
             </md-content>
             <md-card-actions layout="row" layout-align="end center">
-                <md-button ng-click="addUser($event)" aria-label="Benutzer hinzufügen">Benutzer hinzufügen</md-button>
+                <md-button ng-click="addUser($event)" ng-disabled="disallowNewUser" aria-label="Benutzer hinzufügen">Benutzer hinzufügen</md-button>
             </md-card-actions>
         </md-card>
     </md-content>

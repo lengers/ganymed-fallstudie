@@ -29,7 +29,9 @@ angular
           $state.go('login')
         } else {
           $scope.decoded = res.data.data
+          console.log($scope.decoded)
           if ($scope.decoded.group === 'admin') {
+            console.log('GOING FULL ADMIN!')
             $state.go('main.account.admin')
           }
           $scope.getUserData()
