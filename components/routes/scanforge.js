@@ -1,5 +1,9 @@
 const express = require('express')
 const scanforge = express.Router()
+const uuid = require('uuid')
+
+const fs = require('fs')
+const path = require('path')
 
 const HashMap = require('hashmap')
 
@@ -19,17 +23,16 @@ scanforge
   let devicePortMap = new HashMap()
   let deviceRiskMap = new HashMap()
   let deviceVulnMap = new HashMap()
-    // For scan result generation, possible services
-    // For scan result generation, possible vulnerabilities
-  let vulns = ['firmware', 'traffic', 'traffic', 'traffic']
-  let vulnIssues = ['outdated', 'malicious', 'badhost', 'suspicious']
-  let vulnSolution = ['update', 'disconnect', 'disconnect', 'disconnect']
-  let vulnLink = ['https://somedomain.com/update', 'https://avm.de/service/fritzbox/fritzbox-7390/wissensdatenbank/publication/show/894_Automatische-Portfreigaben-einrichten/', 'https://avm.de/service/fritzbox/fritzbox-7390/wissensdatenbank/publication/show/894_Automatische-Portfreigaben-einrichten/', 'https://avm.de/service/fritzbox/fritzbox-7390/wissensdatenbank/publication/show/894_Automatische-Portfreigaben-einrichten/']
+
+  const textpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'vulnTexts.json')
+  let vulnTexts = JSON.parse(fs.readFileSync(textpath, 'utf8'))
+  console.log(vulnTexts)
 
   let riskSum = 0
 
   let scan = {
     'devices': [],
+    'vulnerabilities': [],
     'chartdata': {
       'ports': {
         'ports': [],
@@ -47,12 +50,15 @@ scanforge
     'overallRisk': null
   }
 
+  // let scanJson = JSON.parse(JSON.stringify(scan))
+
   const createQuery = 'SELECT * FROM device;'
   try {
     connection.query(createQuery, (error, results, fields) => {
       if (error) throw error
       for (var i = 0; i < results.length; i++) {
         let device = {}
+        device.uuid = results[i].uuid
         device.hostname = results[i].name
         device.ip = results[i].ip
         device.mac = results[i].mac
@@ -79,16 +85,17 @@ scanforge
         }
         device.services.ports = servicesPorts.join(', ')
 
-        device.vulnerabilities = []
-        let vulnCount = Math.random()
-        for (var l = 0; l < vulnCount; l++) {
-          let vulnId = Math.floor(Math.random() * vulns.length)
-          device.vulnerabilities[l] = {}
-          device.vulnerabilities[l].type = vulns[vulnId]
-          device.vulnerabilities[l].issue = vulnIssues[vulnId]
-          device.vulnerabilities[l].service = device.services.services
-          device.vulnerabilities[l].solution = vulnSolution[vulnId]
-          device.vulnerabilities[l].link = vulnLink[vulnId]
+        let vulnerability = {}
+        if (Boolean(Math.floor(Math.random() * 2)) === true) {
+          let vulnId = vulnTexts[Math.floor(Math.random() * vulnTexts.length)]
+          console.log('vulnId: ' + vulnId)
+          vulnerability.device = device.uuid
+          vulnerability.type = vulnId.type
+          vulnerability.issue = vulnId.issue.replace('PLACEHOLDER', device.openPorts[Math.floor(Math.random() * device.openPorts.length)].service.toUpperCase())
+          vulnerability.solution = vulnId.solution
+          vulnerability.actions = vulnId.actions
+          scan['vulnerabilities'].push(vulnerability)
+
           for (var m = 0; m < device.openPorts.length; m++) {
             device.openPorts[m].service
             if (deviceVulnMap.has(device.openPorts[m].service)) {
@@ -99,8 +106,9 @@ scanforge
             }
           }
         }
+
         device.osNmap = 'Linux'
-        if (device.vulnerabilities.length > 0) {
+        if (vulnerability !== '{}') {
           device.risk = Math.floor(Math.random() * (10 - 3) + 3)
         } else {
           device.risk = Math.floor(Math.random() * (4 - 1) + 1)
@@ -141,6 +149,86 @@ scanforge
       status: 'error'
     })
   }
+})
+.get('/fix/:scanId/:deviceId', (req, res) => {
+  const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', req.params.scanId + '.json')
+  fs.readFile(scanpath, (err, rawScan) => {
+    if (err) throw err
+    let scan = JSON.parse(rawScan.toString())
+
+    let deviceRiskMap = new HashMap()
+    for (var i = 0; i < scan.chartdata.risks.risks.length; i++) {
+      deviceRiskMap.set(scan.chartdata.risks.risks[i], scan.chartdata.risks.count[i])
+    }
+    let deviceVulnMap = new HashMap()
+    for (var j = 0; j < scan.chartdata.vulnerabilities.services.length; j++) {
+      deviceVulnMap.set(scan.chartdata.vulnerabilities.services[j], scan.chartdata.vulnerabilities.count[j])
+    }
+
+    let vulnIndex = 0
+    scan.vulnerabilities.filter(function (item, index) {
+      if (item.device === req.params.deviceId) {
+        vulnIndex = index
+      }
+    })
+
+    let deviceIndex = 0
+    scan.devices.filter(function (item, index) {
+      if (item.uuid === req.params.deviceId) {
+        deviceIndex = index
+      }
+    })
+
+    let oldRisk = scan.devices[deviceIndex].risk
+    deviceRiskMap.set(oldRisk, deviceRiskMap.get(oldRisk) - 1)
+    let newRisk = Math.floor(Math.random() * (4 - 1) + 1)
+    scan.devices[deviceIndex].risk = newRisk
+
+    if (deviceRiskMap.has(newRisk)) {
+      let riskCount = deviceVulnMap.get(newRisk)
+      deviceRiskMap.set(newRisk, riskCount + 1)
+    } else {
+      deviceRiskMap.set(newRisk, 1)
+    }
+
+    for (var k = 0; k < scan.devices[deviceIndex].openPorts.length; k++) {
+      let service = scan.devices[deviceIndex].openPorts.service
+      deviceVulnMap.set(service, deviceVulnMap.get(service) - 1)
+    }
+
+    scan.vulnerabilities.splice(vulnIndex, 1)
+
+    let riskSum = 0
+    scan.devices.forEach((item) => {
+      riskSum += item.risk
+    })
+    scan.overallRisk = Math.floor(riskSum / scan.devices.length)
+
+    let scanUuid = uuid.v4()
+    let scanStartISO = new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
+
+    try {
+      const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
+      connection.query(createQuery, [scanUuid, scanStartISO, 'admin', 120, 4], (error, results, fields) => {
+        if (error) {
+          console.log(error)
+          throw error
+        }
+        console.log(results)
+
+        const resultFilePath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', scanUuid + '.json')
+        fs.writeFile(resultFilePath, JSON.stringify(scan), (err) => {
+          if (err) throw err
+        })
+        res.status(200).json({
+          status: 'ok',
+          results: scan
+        })
+      })
+    } catch (e) {
+      throw e
+    }
+  })
 })
 
 module.exports = scanforge

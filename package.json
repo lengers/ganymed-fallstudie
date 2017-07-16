@@ -27,12 +27,14 @@
     "angular-messages": "1.6.1",
     "angular-ui-router": "0.3.2",
     "bcrypt": "1.0.2",
+    "bcryptjs": "2.4.3",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "hashmap": "2.1.0",
     "jsonwebtoken": "7.4.1",
     "mysql": "2.13.0",
     "ngstorage": "0.3.11",
+    "nodemailer": "4.0.1",
     "uuid": "3.1.0"
   },
   "devDependencies": {

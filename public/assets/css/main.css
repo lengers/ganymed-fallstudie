@@ -23,11 +23,7 @@ md-button, md-icon {
 .md-dialog-container {
   background: none;
   background-color: rgba(105, 105, 105, 0.48);
-  z-index: 1;
-}
-
-.md-headline {
-  font-weight: 500;
+  z-index: 1000000;
 }
 
 .md-scroll-mask {
@@ -93,8 +89,12 @@ md-table-container::-webkit-scrollbar-thumb {
     max-height: 90%;
 }
 
+.layout-flex-container {
+      height: 50vw;
+}
+
 h1 {
-    font-size: 8vw;
+    font-size: 6vw;
 }
 
 .parent {

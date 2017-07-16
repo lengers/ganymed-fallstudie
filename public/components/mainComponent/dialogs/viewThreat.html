@@ -6,7 +6,7 @@
     </style>
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Risikofaktor einsehen: {{vuln.issue}} {{vuln.type}}</h2>
+            <h2>Risikofaktor einsehen: {{vuln.type}}</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <md-icon md-svg-src="assets/img/close.svg" aria-label="Schließen"></md-icon>
@@ -17,15 +17,23 @@
     <md-dialog-content>
         <md-content layout-padding="">
             <div layout="column" flex>
-                <div layout="row" flex>
-                        <h4>Es wurde ein Problem der Kategorie {{vuln.type}} festgestellt. Dies lässt darauf schließen, dass das betroffene Gerät nicht mehr sicher ist. Um Datenverlust und der Infizierung weiterer Netzwerkgeräte vorzubeugen, finden sie unter folgendem Link eine Beschreibung, um das Problem zu beheben und ihr Netzwerk wieder sicher zu machen: </h4>
-                        <p></p>
-                    </div>
+                <div layout="column" flex>
+                    <h4>Gefährdung</h4>
+                    <p>{{vuln.issue}}</p>
+                </div>
+                <div layout="column" flex>
+                    <h4>Lösung</h4>
+                    <p>{{vuln.solution}}</p>
+                </div>
+                <div layout="column" flex>
+                    <h4>Aktionen</h4>
                     <div layout="row" flex layout-align="center">
-                        <md-button layout-align="center" href={{vuln.link}}> Lösungshilfe </md-button>
+                        <md-button layout-align="center" class="md-raised md-primary" ng-click="fix()" ng-if="vuln.actions.fix"> Beheben </md-button>
+                        <md-button layout-align="center" class="md-raised md-primary" ng-click="fix()" ng-if="vuln.actions.ignore"> Ignorieren </md-button>
                     </div>
                 </div>
-    </md-content>
+            </div>
+        </md-content>
 
     </md-dialog-content>
 

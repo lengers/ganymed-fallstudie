@@ -5,9 +5,7 @@ angular
       $scope.user = {
         name: '',
         mail: '',
-        settings: {
-          receive_mails: false
-        }
+        notification_on: 1
       }
 
       $scope.data = {
@@ -29,9 +27,9 @@ angular
           $state.go('login')
         } else {
           $scope.decoded = res.data.data
-          console.log($scope.decoded)
+        //   console.log($scope.decoded)
           if ($scope.decoded.group === 'admin') {
-            console.log('GOING FULL ADMIN!')
+            // console.log('GOING FULL ADMIN!')
             $state.go('main.account.admin')
           }
           $scope.getUserData()
@@ -48,11 +46,13 @@ angular
         }
         $http(req).success(function (data) {
           $scope.user = data.data[0]
-          console.log($scope.user)
+          $scope.user.notification_on = Boolean(data.data[0].notification_on)
+        //   console.log($scope.user)
         })
       }
 
       $scope.updateUserData = function () {
+        console.log($scope.user)
         const userUpdateReq = {
           method: 'PUT',
           url: '/api/users/' + $scope.user.username,

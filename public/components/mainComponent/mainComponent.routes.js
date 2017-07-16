@@ -40,8 +40,8 @@ angular
               url: 'insights'
             })
             .state('main.devices', {
-                templateUrl: '/components/mainComponent/devices.html',
-                controller: 'devicesCtrl',
-                url: 'devices'
+              templateUrl: '/components/mainComponent/devices.html',
+              controller: 'devicesCtrl',
+              url: 'devices'
             })
     }])

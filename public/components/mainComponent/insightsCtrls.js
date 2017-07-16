@@ -15,8 +15,10 @@ angular
         scale: {
           ticks: {
             scaleBeginAtZero: true,
+            steps: 1,
+            stepValue: 1,
             min: 0,
-            max: 4
+            max: 5
           }
         }
       })
@@ -32,7 +34,7 @@ angular
           'token': $sessionStorage.token
         }
       }
-      $http(req).then(function (res, error) {
+      $http(req).then((res, error) => {
         if (res.data.status != 'ok') {
           $state.go('login')
         } else {
@@ -41,7 +43,7 @@ angular
         }
       })
 
-      $scope.getScans = function (type) {
+      $scope.getScans = (type) => {
         let scanReq = {
           method: 'GET',
           url: '/api/scan',
@@ -49,7 +51,7 @@ angular
             'token': $sessionStorage.token
           }
         }
-        $http(scanReq).success(function (data) {
+        $http(scanReq).success((data) => {
           $scope.previousScans = data.data.previous
 
           const groupsReq = {
@@ -60,18 +62,18 @@ angular
             }
           }
 
-          $http(groupsReq).success(function (data) {
-            $scope.scanresults = data.data
+          $http(groupsReq).success((data) => {
+            $scope.scanresults = data.data.results
 
             $scope.vulnerabilities = data.data.results.chartdata.vulnerabilities
             $scope.risk = data.data.results.chartdata.risks
 
-            $scope.vulns = []
-            for (var nr in data.data.results.devices) {
-              for (var vuln in data.data.results.devices[nr].vulnerabilities) {
-                $scope.vulns.push(data.data.results.devices[nr].vulnerabilities[vuln])
-              }
-            }
+            $scope.vulns = data.data.results.vulnerabilities
+            // for (var nr in data.data.results.devices) {
+            //   for (var vuln in data.data.results.devices[nr].vulnerabilities) {
+            //     $scope.vulns.push(data.data.results.devices[nr].vulnerabilities[vuln])
+            //   }
+            // }
           })
         })
 
@@ -82,13 +84,14 @@ angular
             'token': $sessionStorage.token
           }
         }
-        $http(req).success(function (data) {
+        $http(req).success((data) => {
           $scope.devices = data.data
         })
       }
 
-      $scope.viewThreat = function (ev, vuln) {
+      $scope.viewThreat = (ev, vuln) => {
         $rootScope.vuln = vuln
+        $rootScope.scanNo = $scope.previousScans[0].scan_no
         $mdDialog.show({
           controller: viewThreatController,
           templateUrl: '/components/mainComponent/dialogs/viewThreat.html',
@@ -100,11 +103,27 @@ angular
         $state.reload()
       }
 
-      function viewThreatController ($scope, $mdDialog, $rootScope) {
+      function viewThreatController ($scope, $mdDialog, $rootScope, $state) {
         $scope.vuln = $rootScope.vuln
+        $scope.scanNo = $rootScope.scanNo
+        console.log($scope.vuln)
 
-        $scope.cancel = function () {
+        $scope.cancel = () => {
           $mdDialog.cancel()
+        }
+
+        $scope.fix = () => {
+          let fixReq = {
+            method: 'GET',
+            url: '/scanforge/fix/' + $scope.scanNo + '/' + $scope.vuln.device,
+            headers: {
+              'token': $sessionStorage.token
+            }
+          }
+          $http(fixReq).success((data) => {
+          })
+          $mdDialog.cancel()
+          $state.reload()
         }
       }
     })

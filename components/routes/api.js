@@ -7,8 +7,22 @@ const request = require('request')
 const uuid = require('uuid')
 
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const secret = 'goodenoughforthedemo'
+
+const HashMap = require('hashmap')
+const nodemailer = require('nodemailer')
+
+// create reusable transporter object using the default SMTP transport
+let transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // secure:true for port 465, secure:false for port 587
+  auth: {
+    user: 'noreply.ganymed@gmail.com',
+    pass: 'aenue8Phieyoh3Xahgh5niaGh7ofo3ei'
+  }
+})
 
 const mysql = require('mysql')
 const connection = mysql.createConnection({
@@ -45,6 +59,28 @@ const checkJwtAdmin = (req, res, next) => {
   })
 }
 
+const notifyUser = (userMail, about, body) => {
+  if (userMail !== null) {
+    let mailOptions = {
+      from: '"Ganymed" <noreply.ganymed@gmail.com>',
+      to: userMail,
+      subject: about,
+      html: body
+    }
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error)
+      }
+      console.log('Message %s sent: %s', info.messageId, info.response)
+    })
+  } else {
+    console.log('ERR: No mail given, cannot send mail. Duh.')
+  }
+}
+
+let loginHashmap = new HashMap()
+
 // Mocking scans requires these constiables
 let scanUuid = ''
 let scanStart = ''
@@ -59,22 +95,35 @@ api
     })
     .post('/auth', (req, res) => {
       connection.query('SELECT * FROM user WHERE username = ?', [req.body.name], (error, results, fields) => {
-        if (error) throw error
+        if (error) {
+          throw error
+        }
         const passwordCorrect = bcrypt.compareSync(req.body.password, results[0].hash)
         if (passwordCorrect) {
-                // TODO: Implement groups like:
-                //   const userToken = jwt.sign({user: req.params.name, group: TODO}, secret);
+          loginHashmap.set(req.body.name, 0)
           const userToken = jwt.sign({
             exp: Math.floor(Date.now() / 1000) + (60 * 60 * 13),
             name: req.body.name,
             group: results[0].group
           }, secret)
+          console.log('TOKEN CREATED')
           res.status(200).json({
             type: true,
             data: req.body.name,
             token: userToken
           })
         } else {
+          if (loginHashmap.has(req.body.name)) {
+            let loginCount = loginHashmap.get(req.body.name)
+            loginHashmap.set(req.body.name, loginCount + 1)
+            if ((loginCount + 1 >= 4) && (results[0].notification_on === true)) {
+              notifyUser(results[0].mail, '[!] Wiederholte Loginversuche', 'test')
+              loginHashmap.set(req.body.name, 0)
+            }
+          } else {
+            loginHashmap.set(req.body.name, 1)
+          }
+          // TODO: Implement Sendmail option
           res.status(403).json({
             type: false,
             data: req.body.name,
@@ -383,7 +432,7 @@ api
       }
 
       try {
-        const createQuery = 'SELECT * FROM scan;'
+        const createQuery = 'SELECT * FROM scan ORDER BY start_time DESC;'
         connection.query(createQuery, (error, results, fields) => {
           if (error) {
             throw error
@@ -401,14 +450,8 @@ api
           data: 'Something went wrong connecting to the database.'
         })
       }
-
-    //   if (scanUuid !== '') {
-    //     answerdata.running = scanUuid
-    //   }
-    //   scanUuid = uuid.v4()
-    //   scanStart = Math.floor(Date.now() / 1000)
     })
-    /* ============================================ scan ============================================
+    /* =========================================================== scan ===========================================================
      *
      *
      */

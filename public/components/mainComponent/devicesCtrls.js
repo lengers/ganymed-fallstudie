@@ -48,6 +48,9 @@ angular
 
       $scope.viewDevice = function (ev, device) {
         $rootScope.device = device.uuid
+        $rootScope.editDevice = $scope.editDevice
+        $rootScope.editDeviceController = $scope.editDeviceController
+
         $mdDialog.show({
           controller: viewDeviceController,
           templateUrl: '/components/mainComponent/dialogs/viewDevice.html',
@@ -60,9 +63,16 @@ angular
 
       function viewDeviceController ($scope, $mdDialog, $rootScope) {
         $scope.deviceID = $rootScope.device
+        $scope.editDevice = $rootScope.editDevice
+        $scope.editDeviceController = $scope.editDeviceController
 
-        $scope.cancel = function () {
+        $scope.cancel = () => {
           $mdDialog.cancel()
+        }
+
+        $scope.edit = () => {
+            console.log('edit')
+            $scope.editDevice(null, $scope.device)
         }
 
         const deviceReq = {
@@ -97,7 +107,7 @@ angular
         $scope.action = 'Device anlegen'
 
         $scope.serviceRegex = /[a-z]+:[0-9]+(?:,\s[a-z]+:[0-9]+)*/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
-        $scope.macRegex = '([A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+)'
+        $scope.macRegex = '([A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2})'
         $scope.ipRegex = '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)'
         $scope.servicePort = ''
         $scope.services = []
@@ -194,7 +204,7 @@ angular
         $scope.portArray = $scope.device.ports.split(', ')
         $scope.servicePortBuildArray = []
         for (var ec = 0; ec < $scope.serviceArray.length; ec++) {
-            $scope.servicePortBuildArray.push($scope.serviceArray[ec] + ':' + $scope.portArray[ec])
+          $scope.servicePortBuildArray.push($scope.serviceArray[ec] + ':' + $scope.portArray[ec])
         }
         console.log($scope.servicePortBuildArray)
         $scope.servicePort = $scope.servicePortBuildArray.join(', ')
@@ -230,7 +240,4 @@ angular
           })
         }
       }
-
-
-
     })

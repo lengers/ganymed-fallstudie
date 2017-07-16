@@ -2,16 +2,30 @@
     <div layout="row" layout-align="center">
         <div layout-gt-sm="column" flex=30>
             <md-card flex>
-                <md-card-title class="layout-row">
-                    <md-card-title-text class="layout-row" flex>
-                        <span class="md-headline">Risiko Gesamt</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content flex=100>
-                    <span style="text-align: center">
-                    <h1 ng-style="customStyle.style">{{overallRisk}}</h1>
-                </span>
-                </md-card-content>
+                <div>
+                    <md-card-title class="layout-row">
+                        <md-card-title-text class="layout-row" flex>
+                            <span class="md-headline">Risiko Gesamt</span>
+                            <div flex></div>
+                            <md-button ng-click="quickFix($event)">Sofortfix</md-button>
+                        </md-card-title-text>
+                    </md-card-title>
+                </div>
+                <div>
+                    <md-card-content flex=100>
+                        <div>
+                            <span style="text-align: center">
+                            <h1 ng-style="customStyle.style">{{overallRisk}}</h1>
+                            </span>
+                        </div>
+                    </md-card-content>
+                </div>
+                <div>
+                    <md-card-footer>
+                        <h2 style="text-align: center">{{riskText}}</h2>
+                        <p style="text-align: center">Auf einer Skala von 1 (min) bis 10 (max)</p>
+                    </md-card-footer>
+                </div>
             </md-card>
         </div>
 
@@ -21,12 +35,15 @@
 
         <div layout-gt-sm="column" flex=50>
             <md-card flex>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">Letzter Scan</span>
-                    </md-card-title-text>
-                </md-card-title>
+                <div>
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">Letzter Scan</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                </div>
                 <!-- <md-card-content> -->
+                <div>
                     <md-list>
                         <md-divider></md-divider>
                         <md-list-item class="md-3-line">
@@ -37,7 +54,7 @@
                             </div>
                             <div class="md-list-item-text" flex="60">
                                 <p>
-                                    <h3>{{scan.start_time}}</h3></p>
+                                    <h3>{{scan.start_time}} UTC</h3></p>
                             </div>
                         </md-list-item>
                         <md-divider></md-divider>
@@ -64,6 +81,7 @@
                             </div>
                         </md-list-item>
                         <md-list>
+                </div>
                 <!-- </md-card-content> -->
             </md-card>
         </div>
@@ -72,77 +90,97 @@
     <div layout-gt-sm="row" layout-align="center" flex>
         <div layout-gt-sm="column" flex=30>
             <md-card flex>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">Risiko Verteilt</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
-                    <p></p>
-                    <canvas id="doughnut" class="chart chart-doughnut" chart-data="risk.count" chart-labels="risk.risks" chart-series="risk.series">
+                <div>
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">Risiko Verteilt</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                </div>
+                <div>
+                    <md-card-content>
+                        <p></p>
+                        <canvas id="doughnut" class="chart chart-doughnut" chart-data="risk.count" chart-labels="risk.risks" chart-series="risk.series">
                 </canvas>
-                    <p></p>
-                </md-card-content>
+                        <p></p>
+                    </md-card-content>
+                </div>
             </md-card>
         </div>
         <div layout-gt-sm="column" flex=50>
             <div layout-gt-sm="row" layout-align="center" flex>
                 <div layout-gt-sm="column" flex=50>
                     <md-card flex>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">Scans einsehen</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <md-card-content flex>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button ng-click="viewScans()" class="md-raised md-primary" flex>Scans einsehen</md-button>
-                            </md-content>
-                        </md-card-content>
+                        <div>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">Scans einsehen</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                        </div>
+                        <div>
+                            <md-card-content flex>
+                                <md-content layout-gt-sm="column" layout-align="center center" flex>
+                                    <md-button ng-click="viewScans()" class="md-raised md-primary" flex>Scans einsehen</md-button>
+                                </md-content>
+                            </md-card-content>
+                        </div>
                     </md-card>
                 </div>
                 <div layout-gt-sm="column" flex=50>
                     <md-card flex>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">Devices einsehen</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <md-card-content flex>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button ng-click="viewDevices()" class="md-raised md-primary" flex>Devices einsehen</md-button>
-                            </md-content>
-                        </md-card-content>
+                        <div>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">Devices einsehen</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                        </div>
+                        <div>
+                            <md-card-content flex>
+                                <md-content layout-gt-sm="column" layout-align="center center" flex>
+                                    <md-button ng-click="viewDevices()" class="md-raised md-primary" flex>Devices einsehen</md-button>
+                                </md-content>
+                            </md-card-content>
+                        </div>
                     </md-card>
                 </div>
             </div>
             <div layout-gt-sm="row" layout-align="center" flex>
                 <div layout-gt-sm="column" flex=50>
                     <md-card flex>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">Insights einsehen</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <md-card-content flex>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button ng-click="viewInsights()" class="md-raised md-primary" flex>Insights einsehen</md-button>
-                            </md-content>
-                        </md-card-content>
+                        <div>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">Insights einsehen</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                        </div>
+                        <div>
+                            <md-card-content flex>
+                                <md-content layout-gt-sm="column" layout-align="center center" flex>
+                                    <md-button ng-click="viewInsights()" class="md-raised md-primary" flex>Insights einsehen</md-button>
+                                </md-content>
+                            </md-card-content>
+                        </div>
                     </md-card>
                 </div>
                 <div layout-gt-sm="column" flex=50>
                     <md-card flex>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">Hilfe & FAQ</span>
-                            </md-card-title-text>
-                        </md-card-title>
-                        <md-card-content flex>
-                            <md-content layout-gt-sm="column" layout-align="center center" flex>
-                                <md-button ng-click="onlineHelp()" class="md-raised md-primary" flex>Online-Hilfe</md-button>
-                            </md-content>
-                        </md-card-content>
+                        <div>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">Hilfe & FAQ</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                        </div>
+                        <div>
+                            <md-card-content flex>
+                                <md-content layout-gt-sm="column" layout-align="center center" flex>
+                                    <md-button ng-click="onlineHelp()" class="md-raised md-primary" flex>Online-Hilfe</md-button>
+                                </md-content>
+                            </md-card-content>
+                        </div>
                     </md-card>
                 </div>
             </div>

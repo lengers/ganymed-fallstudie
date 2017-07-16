@@ -1,0 +1,38 @@
+[
+    {
+        "type": "Veraltete Firmware",
+        "issue": "Die Firmware des Devices ist veraltet und stellt ein Sicherheitsrisiko dar. Ein Angreifer könnte Kontrolle über das Gerät erlangen und ihre Nutzungsdaten abzuhören oder zu manipulieren.",
+        "solution": "Ein Firmware-Update kann automatisch durchgeführt werden. Dieser Vorgang kann zwischen einigen Sekunden bis Minuten dauern, in denen die Funktionalität des Gerätes nicht zur Verfügung steht.",
+        "actions": {
+            "fix": true,
+            "ignore": false
+        }
+    },
+    {
+        "type": "Auffälliger Netzwerkverkehr",
+        "issue": "Eine Netzwerkanalyse hat ergeben, dass das Gerät große Datenmengen an eine externe IP-Adresse versendet. Dies kann ein Hinweis darauf sein, dass dieses Gerät komprommitiert wurde.",
+        "solution": "Bitte überprüfen Sie die Ihnen bekannten Funktionen des Gerätes und bewerten Sie anschließend, ob dieses Verhalten erwartet ist oder ob es sich um ein Sicherheitsrisiko handelt.",
+        "actions": {
+            "fix": true,
+            "ignore": true
+        }
+    },
+    {
+        "type": "Potentiell bösartiger Netzwerkverkehr",
+        "issue": "Eine Netzwerkanalyse hat ergeben, dass das Gerät Daten mit einer als schadhaft bekannten IP-Adresse austauscht. Dies ist sehr wahrscheinlich ein Hinweis darauf, dass dieses Gerät komprommitiert wurde.",
+        "solution": "Bitte überprüfen Sie die Ihnen bekannten Funktionen des Gerätes und bewerten Sie anschließend, ob dieses Verhalten erwartet ist oder ob es sich um ein Sicherheitsrisiko handelt.",
+        "actions": {
+            "fix": true,
+            "ignore": true
+        }
+    },
+    {
+        "type": "Schwachstelle in Dienst",
+        "issue": "Es wurde eine Schwachstelle in dem Dienst PLACEHOLDER entdeckt. Diese Schwachstelle stellt eine potentielle Bedrohung dar, die es einem Angreifer erluaben könnte, Kontrolle über das Gerät zu erlangen und ihre Nutzungsdaten abzuhören oder zu manipulieren.",
+        "solution": "Ein Update des betroffenen Dienstes kann automatisch durchgeführt werden, um das Problem zu beheben. Beachten Sie, dass die Funktionalität des betroffenen Dienstes in dieser Zeit beeinträchtigt sein kann.",
+        "actions": {
+            "fix": true,
+            "ignore": false
+        }
+    }
+]

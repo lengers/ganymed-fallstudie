@@ -1,71 +1,90 @@
 <md-content layout-padding="">
-<div layout="row" flex>
-    <div flex="10" hide-xs="" hide-sm="">
-        <!-- Spacer //-->
-    </div>
-    <div layout="column" layout-align="center" flex=60>
-        <div layout-gt-sm="row" layout-align="center" flex>
-            <md-card flex>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">Verwundbare Dienste</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
-                    <p></p>
-                    <canvas id="radar" class="chart chart-radar" chart-data="vulnerabilities.count" chart-series="[Schwachstellen]" chart-labels="vulnerabilities.services">
+    <div layout="row" flex>
+        <div flex="10" hide-xs="" hide-sm="">
+            <!-- Spacer //-->
+        </div>
+        <div layout="column" layout-align="center" flex=60>
+            <div>
+            <div layout-gt-sm="row" layout-align="center" flex>
+                    <md-card flex=50>
+                        <div>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">Verwundbare Dienste</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                        </div>
+                        <div>
+                            <md-card-content>
+                                <p></p>
+                                <canvas id="radar" class="chart chart-radar" chart-data="vulnerabilities.count" chart-series="[Schwachstellen]" chart-labels="vulnerabilities.services">
                     </canvas>
-                    <p></p>
-                </md-card-content>
-            </md-card>
+                                <p></p>
+                            </md-card-content>
+                        </div>
+                        <md-card-footer>
+                        </md-card-footer>
+                    </md-card>
 
 
-            <div flex="2" hide-xs="" hide-sm="">
-                <!-- Spacer //-->
+                <div flex="2" hide-xs="" hide-sm="">
+                    <!-- Spacer //-->
+                </div>
+
+                    <md-card flex=50>
+                        <div>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">Risiko Verteilt</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                        </div>
+                        <div>
+                            <md-card-content>
+                                <p></p>
+                                <div>
+                                    <canvas id="doughnut" class="chart chart-doughnut" chart-data="risk.count" chart-labels="risk.risks" chart-series="risk.series">
+                            </canvas>
+                                </div>
+                                <p></p>
+                            </md-card-content>
+                        </div>
+                        <md-card-footer>
+                        </md-card-footer>
+                    </md-card>
             </div>
-
-            <md-card flex>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">Risiko Verteilt</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
-                    <p></p>
-                    <canvas id="doughnut" class="chart chart-doughnut" chart-data="risk.count" chart-labels="risk.risks" chart-series="risk.series">
-                </canvas>
-                    <p></p>
-                </md-card-content>
-            </md-card>
         </div>
+        <div>
 
-        <div layout-gt-sm="row" flex>
-            <md-card flex>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">Festgestellte Bedrohungen</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-list>
-                    <md-divider></md-divider>
-                    <md-list-item class="md-3-line" ng-repeat="vuln in vulns" ng-click="viewThreat($event, vuln)">
-                        <md-divider></md-divider>
-                        <div style="min-width: 50px" flex>
-                            <p>
-                                <h3>{{vuln.issue}} {{vuln.type}}</h3>
-                            </p>
-                        </div>
-                        <div style="min-width: 50px" flex>
-                            <p>
-                                <h4>{{vuln.service}}</h4>
-                            </p>
-                        </div>
-                    </md-list-item>
-                </md-list>
-            </md-card>
-
+            <div layout-gt-sm="row" flex>
+                <md-card flex>
+                    <div>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Festgestellte Bedrohungen</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                    </div>
+                    <div>
+                        <md-list>
+                            <md-divider ng-if="!$last"></md-divider>
+                            <md-list-item class="md-3-line" ng-repeat="vuln in vulns" ng-click="viewThreat($event, vuln)">
+                                <md-divider></md-divider>
+                                <div style="min-width: 50px" flex>
+                                    <p>
+                                        <h3>{{vuln.type}}</h3>
+                                    </p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                </md-card>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div flex hide-xs="" hide-sm="">
+            <!-- Spacer //-->
         </div>
     </div>
-</div>
 
 </md-content>

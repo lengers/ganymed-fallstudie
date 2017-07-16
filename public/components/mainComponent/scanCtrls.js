@@ -98,7 +98,7 @@ angular
           templateUrl: '/components/mainComponent/dialogs/viewScan.html',
           parent: angular.element(document.body),
           targetEvent: ev,
-          clickOutsideToClose: false,
+          clickOutsideToClose: true,
           hasBackdrop: false
         })
         $state.reload()
@@ -118,16 +118,16 @@ angular
         }
 
         $http(groupsReq).success(function (data) {
-          $scope.scanresults = data.data
+          $scope.scanresults = data.data.results
                 // set ports graph
-          $scope.port.ports = $scope.scanresults.results.chartdata.ports.ports
-          $scope.port.series = $scope.scanresults.results.chartdata.ports.ports
-          $scope.port.count = $scope.scanresults.results.chartdata.ports.count
+          $scope.port.ports = $scope.scanresults.chartdata.ports.ports
+          $scope.port.series = $scope.scanresults.chartdata.ports.ports
+          $scope.port.count = $scope.scanresults.chartdata.ports.count
           console.log($scope.port)
                 // set risk graph
-          $scope.risk.risks = $scope.scanresults.results.chartdata.risks.risks
-          $scope.risk.series = $scope.scanresults.results.chartdata.risks.risks
-          $scope.risk.count = $scope.scanresults.results.chartdata.risks.count
+          $scope.risk.risks = $scope.scanresults.chartdata.risks.risks
+          $scope.risk.series = $scope.scanresults.chartdata.risks.risks
+          $scope.risk.count = $scope.scanresults.chartdata.risks.count
           console.log($scope.risk)
         })
 

@@ -120,6 +120,7 @@ angular
                         .position('top right')
                         .hideDelay(3000)
                     )
+
           }).then($state.reload())
         }, function () {
           $scope.status = 'Abort deleting.'
@@ -199,10 +200,11 @@ angular
             $mdDialog.cancel()
           } else if (answer === 'send') {
             $scope.userForm.$setSubmitted()
-            console.log($scope.userForm.$valid)
-            $scope.userForm.name.$setValidity('required', false)
+            // console.log($scope.userForm.$valid)
+            // $scope.userForm.name.$setValidity('required', false)
             if ($scope.userForm.$valid) {
                         // check if user exists
+              console.log('Check if user exists')
               const userCheckReq = {
                 method: 'GET',
                 url: '/api/users/' + $scope.newUser.username,
@@ -261,7 +263,10 @@ angular
                   })
                 }
               })
-            }
+          } else {
+              console.log('Form is not valid')
+              console.log($scope.userForm.$error)
+          }
           }
         }
       }
@@ -300,9 +305,6 @@ angular
             }
             $http(userCheckReq).success(function (data) {
               if (data.data.length != 0) {
-                console.log('User already exists')
-                $scope.userForm.name.$setValidity('default', false)
-              } else {
                 console.log($scope.newUser)
                 const userUpdateReq = {
                   method: 'PUT',
@@ -331,7 +333,7 @@ angular
                                     .position('top right')
                                     .hideDelay(3000)
                                 )
-                  $scope.updateUsersData()
+                //   $scope.updateUsersData()
                                 // Overwrite because root
                   $rootScope.newUser = {
                     username: '',
@@ -347,7 +349,9 @@ angular
 
                   $state.reload()
                 })
-              }
+            } else {
+                console.log('This user does not exist.')
+            }
             })
           }
         }

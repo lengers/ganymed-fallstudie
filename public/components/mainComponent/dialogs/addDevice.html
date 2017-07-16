@@ -86,10 +86,7 @@
 
                         <md-input-container class="md-block" flex-gt-sm="">
                             <label>Hersteller</label>
-                            <input required="" type="text" name="manufacturer" placeholder='AVM' ng-model="device.manufacturer">
-                            <div ng-messages="deviceForm.manufacturer.$error">
-                                <div ng-message="required">Ein Hersteller muss angegeben werden.</div>
-                            </div>
+                            <input type="text" name="manufacturer" placeholder='AVM' ng-model="device.manufacturer">
                         </md-input-container>
 
                         <div flex="5" hide-xs="" hide-sm="">
@@ -98,11 +95,7 @@
 
                         <md-input-container class="md-block" flex-gt-sm="">
                             <label>Modell</label>
-                            <input required="" type="text" name="modell" placeholder='Fritz!Box 7490' ng-model="device.modell">
-
-                            <div ng-messages="deviceForm.modell.$error">
-                                <div ng-message="required">Ein Modell muss angegeben werden.</div>
-                            </div>
+                            <input type="text" name="modell" placeholder='Fritz!Box 7490' ng-model="device.modell">
                         </md-input-container>
 
                     </div>

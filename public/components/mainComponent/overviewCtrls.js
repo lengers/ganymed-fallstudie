@@ -1,7 +1,7 @@
 'use strict'
 angular
     .module('overviewCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
-    .controller('overviewCtrl', function ($scope, $state, $http, $rootScope, $mdToast, $localStorage, $sessionStorage) {
+    .controller('overviewCtrl', function ($scope, $state, $http, $rootScope, $mdDialog, $mdToast, $localStorage, $sessionStorage) {
       $scope.$storage = $localStorage
 
       $scope.customStyle = {}
@@ -16,7 +16,7 @@ angular
           'token': $sessionStorage.token
         }
       }
-      $http(req).then(function (res, error) {
+      $http(req).then((res, error) => {
         if (res.data.status != 'ok') {
           $state.go('login')
         }
@@ -39,12 +39,61 @@ angular
 
       $scope.onlineHelp = () => {
         $mdToast.show(
-          $mdToast.simple()
-          .textContent('Nicht in der Demo.')
-          .position('top right')
-          .hideDelay(3000)
-        )
+                $mdToast.simple()
+                .textContent('Nicht in der Demo.')
+                .position('top right')
+                .hideDelay(3000)
+            )
       }
+
+      $scope.quickFix = (ev) => {
+        $mdDialog.show({
+          controller: quickFixController,
+          templateUrl: '/components/mainComponent/dialogs/quickFix.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose: true,
+          hasBackdrop: false
+        })
+      }
+
+      let quickFixController = ($scope, $mdDialog, $mdToast, $state) => {
+        $scope.cancel = () => {
+          $mdDialog.cancel()
+        }
+
+        $scope.fix = () => {
+
+        }
+
+        $scope.getScans = (type) => {
+          let scanReq = {
+            method: 'GET',
+            url: '/api/scan',
+            headers: {
+              'token': $sessionStorage.token
+            }
+          }
+          $http(scanReq).success((data) => {
+            $scope.previousScans = data.data.previous
+
+            const groupsReq = {
+              method: 'GET',
+              url: '/api/scan/results/' + $scope.previousScans[0].scan_no,
+              headers: {
+                'token': $sessionStorage.token
+              }
+            }
+
+            $http(groupsReq).success((data) => {
+              $scope.vulns = data.data.results.vulnerabilities
+            })
+          })
+        }
+
+        $scope.getScans()
+      }
+
 
       const scanReq = {
         method: 'GET',
@@ -53,7 +102,7 @@ angular
           'token': $sessionStorage.token
         }
       }
-      $http(scanReq).success(function (data) {
+      $http(scanReq).success((data) => {
         $scope.scan = data.data.previous[0]
         const scanReq = {
           method: 'GET',
@@ -63,7 +112,8 @@ angular
           }
         }
 
-        $http(scanReq).success(function (data) {
+        $http(scanReq).success((data) => {
+          console.log(data.data)
           $scope.scanresults = data.data
                 // set risk graph
           $scope.risk.risks = data.data.results.chartdata.risks.risks
@@ -74,7 +124,8 @@ angular
 
           $scope.colorArray = ['#009933', '#47d147', '#ccff33', '#e6e600', '#ff9900', '#e68a00', '#e62e00', '#cc2900', '#cc0000', '#990000']
                 //   Alternative
-          $scope.colorArray2 = ['#66ccff', '#1ac6ff', '#00ace6', '#3399ff', '#0066cc', '#0059b3', '#0033cc', '#002db3', '#003399', '#000099']
+          $scope.textArray = ['Minimales Risiko', 'Sehr geringes Risiko', 'Geringes Risiko', 'Geringes Risiko', 'Mittleres Risiko', 'Mittleres Risiko', 'Hohes Risiko', 'Hohes Risiko', 'Hohes Risiko', 'Sehr hohes Risiko']
+          $scope.riskText = $scope.textArray[$scope.overallRisk - 1]
 
           $scope.customStyle.style = {
             'color': $scope.colorArray[$scope.overallRisk - 1],

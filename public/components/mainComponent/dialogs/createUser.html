@@ -21,9 +21,9 @@
                             <input md-maxlength="30" required="" name="name" ng-model="newUser.username">
 
                             <div ng-messages="userForm.name.$error">
-                                <div ng-message="required">Ein Username wird benötigt.</div>
                                 <div ng-message="md-maxlength">Der Username darf nicht länger als 30 Zeichen sein.</div>
                                 <div ng-message="default">Der Username ist bereits belegt.</div>
+                                <div ng-message="required">Ein Username wird benötigt.</div>
                             </div>
                         </md-input-container>
 
@@ -93,7 +93,7 @@
                             <!-- Spacer //-->
                         </div>
                         <md-input-container class="md-block" flex-gt-sm="">
-                            <md-switch md-no-ink name="notification" ng-model="newUser.notification_on" required>
+                            <md-switch md-no-ink name="notification" ng-model="newUser.notification_on">
                              Benachrichtigungen per Mail aktivieren.
                            </md-switch>
                         </md-input-container>
