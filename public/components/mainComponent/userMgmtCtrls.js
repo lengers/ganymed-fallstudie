@@ -117,34 +117,37 @@ angular
           if (answer === 'abort') {
             $mdDialog.cancel()
           } else if (answer === 'send') {
-            console.log($scope.user)
-            const userUpdateReq = {
-              method: 'PUT',
-              url: '/api/users/' + $scope.user.username,
-              headers: {
-                'token': $sessionStorage.token
-              },
-              data: {
-                username: $scope.user.username,
-                password: $scope.user.password,
-                group: $scope.user.group,
-                settings: $scope.user.settings,
-                mail: $scope.user.mail,
-                notification_on: $scope.user.notification_on
+            $scope.userForm.$setSubmitted()
+            if ($scope.userForm.$valid) {
+              console.log($scope.user)
+              const userUpdateReq = {
+                method: 'PUT',
+                url: '/api/users/' + $scope.user.username,
+                headers: {
+                  'token': $sessionStorage.token
+                },
+                data: {
+                  username: $scope.user.username,
+                  password: $scope.user.password,
+                  group: $scope.user.group,
+                  settings: $scope.user.settings,
+                  mail: $scope.user.mail,
+                  notification_on: $scope.user.notification_on
+                }
               }
-            }
-            $http(userUpdateReq).success(function (data) {
-              console.log(data)
-              $mdDialog.hide(answer)
+              $http(userUpdateReq).success(function (data) {
+                console.log(data)
+                $mdDialog.hide(answer)
 
-              $mdToast.show(
+                $mdToast.show(
                             $mdToast.simple()
                             .textContent('Änderungen gespeichert.')
                             .position('top right')
                             .hideDelay(3000)
                         )
-              $state.reload()
-            })
+                $state.reload()
+              })
+            }
           }
         }
         $rootScope.user = undefined
