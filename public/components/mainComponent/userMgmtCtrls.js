@@ -51,6 +51,18 @@ angular
         })
       }
 
+      $scope.switchChange = () => {
+        if ($scope.user.mail === null) {
+          console.log('toast')
+          $mdToast.show($mdToast.simple()
+            .textContent('Keine Emailadresse angegeben.')
+            .position('top right')
+            .hideDelay(3000))
+
+          $scope.user.notification_on = 0
+        }
+      }
+
       $scope.updateUserData = function () {
         console.log($scope.user)
         const userUpdateReq = {

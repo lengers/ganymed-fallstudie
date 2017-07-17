@@ -18,8 +18,8 @@
                                 <h3>{{user.username}}</h3></p>
                             <p>{{user.group}}</p>
                         </div>
-                        <md-icon md-svg-src="/assets/img/build_black.svg" ng-click="editUser($event, user)" aria-label="Benutzer bearbeiten" class="md-secondary md-hue-3"></md-icon>
-                        <md-icon md-svg-src="/assets/img/clear_black.svg" ng-click="deleteUser($event, user)" aria-label="Benutzer löschen" class="md-secondary md-hue-3"></md-icon>
+                        <md-icon md-svg-src="/assets/img/build_black.svg" ng-disabled="allowEdit(user)" ng-click="editUser($event, user)" aria-label="Benutzer bearbeiten" class="md-secondary md-hue-3"></md-icon>
+                        <md-icon md-svg-src="/assets/img/clear_black.svg" ng-disabled="allowEdit(user)" ng-click="deleteUser($event, user)" aria-label="Benutzer löschen" class="md-secondary md-hue-3"></md-icon>
                         <md-divider></md-divider>
                     </md-list-item>
                 </md-list>

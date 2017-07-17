@@ -41,7 +41,7 @@
                 <md-content class="layout-column" layout-align=" stretch">
                     <div>
                         <md-input-container class="md-block">
-                            <md-switch md-no-ink ng-model="user.notification_on">
+                            <md-switch md-no-ink ng-change="switchChange()" ng-model="user.notification_on">
                                 Benachrichtigungen per Email
                             </md-switch>
 

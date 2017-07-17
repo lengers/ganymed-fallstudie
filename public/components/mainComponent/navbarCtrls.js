@@ -32,7 +32,6 @@ angular
           $state.go('login')
         }
       })
-      console.log($scope.navbarAccountRoute)
 
                 // closes the sidenav
       $scope.close = function () {

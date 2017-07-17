@@ -45,6 +45,9 @@ angular
         notification_on: false
       }
 
+      $scope.disallowEdit = false
+      $scope.disallowDelete = false
+
       if ($sessionStorage.token === undefined) {
         $state.go('login')
       };
@@ -71,6 +74,27 @@ angular
 
       $scope.disallowNewUser = false
 
+      $scope.allowEdit = (user) => {
+        $scope.adminCount = 0
+        $scope.userCount = 0
+        for (var i = 0; i < $scope.users; i++) {
+          if ($scope.users[i].group === 'admin') {
+            $scope.adminCount += 1
+          } else {
+            $scope.userCount += 1
+          }
+        }
+        if (($scope.adminCount <= 1) && (user.group === 'admin')) {
+          return true
+        } else {
+          return false
+        }
+
+        if (user.group === 'admin') {
+          return false
+        }
+      }
+
       $scope.updateUsersData = function (type) {
         var req = {
           method: 'GET',
@@ -87,7 +111,6 @@ angular
           } else {
             $scope.disallowNewUser = false
           }
-          console.log($scope.users)
         })
       }
 
@@ -104,7 +127,6 @@ angular
 
         $mdDialog.show(confirm).then(function () {
           $scope.status = 'You decided to get rid of your debt.'
-          console.log(user.username)
           var req = {
             method: 'DELETE',
             url: '/api/users/' + user.username,
@@ -120,7 +142,6 @@ angular
                         .position('top right')
                         .hideDelay(3000)
                     )
-
           }).then($state.reload())
         }, function () {
           $scope.status = 'Abort deleting.'
@@ -139,7 +160,6 @@ angular
           mail: user.mail,
           notification_on: user.notification_on
         }
-        console.log($rootScope.newUser)
 
         $mdDialog.show({
           controller: EditDialogController,
@@ -204,7 +224,6 @@ angular
             // $scope.userForm.name.$setValidity('required', false)
             if ($scope.userForm.$valid) {
                         // check if user exists
-              console.log('Check if user exists')
               const userCheckReq = {
                 method: 'GET',
                 url: '/api/users/' + $scope.newUser.username,
@@ -214,10 +233,8 @@ angular
               }
               $http(userCheckReq).success(function (data) {
                 if (data.data.length != 0) {
-                  console.log('User already exists')
                   $scope.userForm.name.$setValidity('default', false)
                 } else {
-                  console.log($scope.newUser)
                   const userCreateReq = {
                     method: 'POST',
                     url: '/api/users/' + $scope.newUser.username,
@@ -235,9 +252,7 @@ angular
                       notification_on: $scope.newUser.notification_on
                     }
                   }
-                  console.log(userCreateReq)
                   $http(userCreateReq).success(function (data) {
-                    console.log(data)
                     $mdDialog.hide(answer)
 
                     $mdToast.show(
@@ -263,10 +278,10 @@ angular
                   })
                 }
               })
-          } else {
+            } else {
               console.log('Form is not valid')
               console.log($scope.userForm.$error)
-          }
+            }
           }
         }
       }
@@ -284,6 +299,7 @@ angular
 
         $http(groupsReq).success(function (data) {
           $scope.groups = data.data
+          console.log(data.data)
         })
 
         $scope.cancel = function () {
@@ -305,7 +321,6 @@ angular
             }
             $http(userCheckReq).success(function (data) {
               if (data.data.length != 0) {
-                console.log($scope.newUser)
                 const userUpdateReq = {
                   method: 'PUT',
                   url: '/api/users/' + $scope.newUser.username,
@@ -324,7 +339,6 @@ angular
                   }
                 }
                 $http(userUpdateReq).success(function (data) {
-                  console.log(data)
                   $mdDialog.hide(answer)
 
                   $mdToast.show(
@@ -349,9 +363,7 @@ angular
 
                   $state.reload()
                 })
-            } else {
-                console.log('This user does not exist.')
-            }
+              }
             })
           }
         }

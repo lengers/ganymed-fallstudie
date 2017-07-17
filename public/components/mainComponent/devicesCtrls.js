@@ -1,7 +1,7 @@
 'use strict'
 angular
     .module('devicesCtrls', ['ngMaterial', 'ngStorage'])
-    .controller('devicesCtrl', function ($scope, $rootScope, $state, $http, $mdDialog, $sessionStorage, $localStorage) {
+    .controller('devicesCtrl', function ($scope, $rootScope, $state, $http, $mdToast, $mdDialog, $sessionStorage, $localStorage) {
       let req = {
         method: 'GET',
         url: '/api/devices',
@@ -71,8 +71,8 @@ angular
         }
 
         $scope.edit = () => {
-            console.log('edit')
-            $scope.editDevice(null, $scope.device)
+          console.log('edit')
+          $scope.editDevice(null, $scope.device)
         }
 
         const deviceReq = {

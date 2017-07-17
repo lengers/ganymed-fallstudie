@@ -94,7 +94,6 @@ angular
         $scope.getScans()
       }
 
-
       const scanReq = {
         method: 'GET',
         url: '/api/scan',
