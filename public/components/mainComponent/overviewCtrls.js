@@ -118,8 +118,7 @@ angular
           $scope.risk.risks = data.data.results.chartdata.risks.risks
           $scope.risk.series = data.data.results.chartdata.risks.risks
           $scope.risk.count = data.data.results.chartdata.risks.count
-          let average = (array) => array.reduce((a, b) => a + b) / array.length
-          $scope.overallRisk = Math.floor(average($scope.risk.risks))
+          $scope.overallRisk = data.data.results.overallRisk
 
           $scope.colorArray = ['#009933', '#47d147', '#ccff33', '#e6e600', '#ff9900', '#e68a00', '#e62e00', '#cc2900', '#cc0000', '#990000']
                 //   Alternative
