@@ -477,6 +477,7 @@ api
     })
     .get('/scan/status/:uuid', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
+      console.log(req.params.uuid)
       if (scanUuid !== req.params.uuid) {
         res.status(424).json({
           status: 'error',
@@ -499,8 +500,8 @@ api
       }
     })
     .get('/scan/results/:uuid', checkJwt, (req, res) => {
-        // If a scan is already running, tell the user so
-      console.log(scanUuid)
+        // let scanUser = req.headers.decoded.name
+
       if (scanUuid === req.params.uuid) {
         console.log(req.params.uuid)
         if (scanPercent < 100) {
@@ -511,22 +512,20 @@ api
         } else {
           // Write scan info to DB
           try {
-            const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
-            connection.query(createQuery, [scanUuid, scanStartISO, req.headers.decoded.name, 120, 4], (error, results, fields) => {
-              if (error) {
-                console.log(error)
-                throw error
-              }
-              console.log(results)
+              // get forged scan results
+            request.get('http://localhost:7777/scanforge', function (error, response, body) {
+              if (error) throw error
+              let scanResult = JSON.parse(body).data
+              console.log(JSON.parse(body).data)
 
-        // get forged scan results
-              request.get('http://localhost:7777/scanforge', function (error, response, body) {
+              const resultFilePath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', scanUuid + '.json')
+              fs.writeFile(resultFilePath, JSON.stringify(JSON.parse(body).data), (err) => {
+                if (err) throw err
+              })
+
+              const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
+              connection.query(createQuery, [scanUuid, scanStartISO, req.headers.decoded.name, 120, scanResult.overallRisk], (error, results, fields) => {
                 if (error) throw error
-                console.log(JSON.parse(body).data)
-                const resultFilePath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', scanUuid + '.json')
-                fs.writeFile(resultFilePath, JSON.stringify(JSON.parse(body).data), (err) => {
-                  if (err) throw err
-                })
                 res.status(200).json({
                   status: 'ok',
                   data: {
@@ -534,6 +533,7 @@ api
                     results: JSON.parse(body).data
                   }
                 })
+                scanUuid = ''
               })
             })
           } catch (e) {
@@ -589,6 +589,7 @@ api
           return /\S/.test(e)
         })
         try {
+          console.log(queryArray)
           for (var i = 0; i < queryArray.length; i++) {
             console.log('EXECUTING QUERY: ' + queryArray[i])
             connection.query(queryArray[i] + ';', (error, results, fields) => {

@@ -126,7 +126,6 @@ angular
                 .hasBackdrop(false)
 
         $mdDialog.show(confirm).then(function () {
-          $scope.status = 'You decided to get rid of your debt.'
           var req = {
             method: 'DELETE',
             url: '/api/users/' + user.username,
@@ -142,6 +141,10 @@ angular
                         .position('top right')
                         .hideDelay(3000)
                     )
+            if ($scope.decoded.name === user.username) {
+              $sessionStorage.token = null
+              $state.go('login')
+            }
           }).then($state.reload())
         }, function () {
           $scope.status = 'Abort deleting.'

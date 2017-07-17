@@ -41,6 +41,7 @@ angular
           }
         }
         $http(req).success(function (data) {
+            console.log(data.data.previous)
           $scope.previousScans = data.data.previous
         })
       }
