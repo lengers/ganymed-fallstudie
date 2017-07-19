@@ -103,14 +103,22 @@ angular
           $mdDialog.cancel()
         }
 
+        $scope.services = []
         $scope.caption = 'hinzufügen'
         $scope.action = 'Device anlegen'
 
-        $scope.serviceRegex = /[a-z]+:[0-9]+(?:,\s[a-z]+:[0-9]+)*/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
+        $scope.addService = () => {
+          if ($scope.deviceForm.servicePortInput.$valid) {
+            $scope.serviceList.push($scope.addServicePort)
+            $scope.addServicePort = null
+          }
+        }
+
+        $scope.serviceRegex = /[a-z]+:[0-9]+/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
         $scope.macRegex = '([A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2})'
-        $scope.ipRegex = '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)'
+        $scope.ipRegex = /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/
         $scope.servicePort = ''
-        $scope.services = []
+        $scope.serviceList = []
         $scope.ports = []
 
         $scope.device = {
@@ -135,18 +143,13 @@ angular
         $scope.device.risk_level = Math.floor((Math.random() * 5) + 1)
 
         $scope.createDevice = function () {
-          console.log($scope.device)
-          let servicePortArr = $scope.servicePort.split(', ')
-          console.log(servicePortArr)
-          for (var i = 0; i < servicePortArr.length; i++) {
-            let splitArr = servicePortArr[i].split(':')
-            console.log(splitArr)
+          for (var i = 0; i < $scope.serviceList.length; i++) {
+            let splitArr = $scope.serviceList[i].split(':')
             $scope.services.push(splitArr[0])
             $scope.ports.push(splitArr[1])
           }
           $scope.device.ports = $scope.ports.join(', ')
           $scope.device.services = $scope.services.join(', ')
-          console.log($scope.device)
 
                 // POST to /device/:uuid
           const deviceAddReq = {

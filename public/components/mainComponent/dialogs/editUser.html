@@ -83,7 +83,7 @@
                         <md-input-container class="md-block" flex-gt-sm="">
                             <label>Gruppe</label>
                             <md-select ng-model="newUser.group">
-                                <md-option ng-repeat="group in groups" value="{{group.group_id}}" ng-selected="$first">
+                                <md-option ng-repeat="group in groups" value="{{group.group_id}}" ng-selected="newUser.group">
                                     {{group.group_id}}
                                 </md-option>
                             </md-select>

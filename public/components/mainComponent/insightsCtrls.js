@@ -110,6 +110,7 @@ angular
 
         $scope.cancel = () => {
           $mdDialog.cancel()
+          $state.reload()
         }
 
         $scope.fix = () => {

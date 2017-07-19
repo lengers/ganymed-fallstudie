@@ -154,6 +154,7 @@ angular
       }
 
       $scope.editUser = function (ev, user) {
+        console.log(user)
         $rootScope.newUser = {
           username: user.username,
           password: '',

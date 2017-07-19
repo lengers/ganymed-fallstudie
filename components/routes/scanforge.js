@@ -73,7 +73,6 @@ scanforge
           }
           device.openPorts[j] = {}
           device.openPorts[j].port = ports[j]
-          console.log(ports[j] + '     ' + portMap.get(ports[j]))
           device.openPorts[j].service = portMap.get(ports[j])
         }
         device.services = {}
@@ -184,6 +183,12 @@ scanforge
     let newRisk = Math.floor(Math.random() * (4 - 1) + 1)
     scan.devices[deviceIndex].risk = newRisk
 
+    const updateQuery = 'UPDATE device SET risk_level = ? WHERE uuid = ?;'
+    console.log(req.params.deviceId)
+    connection.query(updateQuery, [newRisk, req.params.deviceId], (error, results, fields) => {
+      if (error) throw error
+    })
+
     if (deviceRiskMap.has(newRisk)) {
       let riskCount = deviceVulnMap.get(newRisk)
       deviceRiskMap.set(newRisk, riskCount + 1)
@@ -195,6 +200,12 @@ scanforge
       let service = scan.devices[deviceIndex].openPorts.service
       deviceVulnMap.set(service, deviceVulnMap.get(service) - 1)
     }
+
+    scan.chartdata.risks.risks = deviceRiskMap.keys()
+    scan.chartdata.risks.count = deviceRiskMap.values()
+
+    scan.chartdata.vulnerabilities.services = deviceVulnMap.keys()
+    scan.chartdata.vulnerabilities.count = deviceVulnMap.values()
 
     scan.vulnerabilities.splice(vulnIndex, 1)
 
@@ -211,10 +222,8 @@ scanforge
       const createQuery = 'INSERT INTO scan (scan_no, start_time, started_by_user, duration, risk_level) VALUES (?, ?, ?, ?, ?);'
       connection.query(createQuery, [scanUuid, scanStartISO, 'admin', 120, 4], (error, results, fields) => {
         if (error) {
-          console.log(error)
           throw error
         }
-        console.log(results)
 
         const resultFilePath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', scanUuid + '.json')
         fs.writeFile(resultFilePath, JSON.stringify(scan), (err) => {

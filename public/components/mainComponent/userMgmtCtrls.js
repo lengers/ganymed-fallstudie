@@ -5,7 +5,11 @@ angular
       $scope.user = {
         name: '',
         mail: '',
-        notification_on: 1
+        notification_on: true,
+        settings: {
+          mail_risk: false,
+          risklevel: 1
+        }
       }
 
       $scope.data = {
@@ -47,11 +51,15 @@ angular
         $http(req).success(function (data) {
           $scope.user = data.data[0]
           $scope.user.notification_on = Boolean(data.data[0].notification_on)
+          $scope.user.settings = JSON.parse(data.data[0].settings)
+        //   console.log(JSON.parse(data.data[0].settings).mail_risk)
+        //   $scope.user.settings.mail_risk = Boolean(data.data[0].settings.mail_risk)
+
         //   console.log($scope.user)
         })
       }
 
-      $scope.switchChange = () => {
+      $scope.switchMail = () => {
         if ($scope.user.mail === null) {
           console.log('toast')
           $mdToast.show($mdToast.simple()
@@ -59,7 +67,7 @@ angular
             .position('top right')
             .hideDelay(3000))
 
-          $scope.user.notification_on = 0
+          $scope.user.notification_on = false
         }
       }
 

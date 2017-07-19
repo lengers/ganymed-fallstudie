@@ -32,7 +32,7 @@
 
                         <md-input-container class="md-block" flex-gt-sm="">
                             <label>IP-Adresse</label>
-                            <input required="" name="ip" ng-model="device.ip" placeholder="0.0.0.0" ng-pattern=ipRegex>
+                            <input required="" name="ip" ng-model="device.ip" placeholder="0.0.0.0" ng-pattern="ipRegex">
 
                             <div ng-messages="deviceForm.ip.$error">
                                 <div ng-message="required">Eine IP wird benötigt.</div>
@@ -64,18 +64,37 @@
                             <!-- Spacer //-->
                         </div>
 
-                        <md-input-container class="md-block" flex-gt-sm="">
-                            <label>Dienste und Ports (getrennt durch Kommata)</label>
-                            <input required="" name="servicePortInput" ng-model="servicePort" placeholder="http:80, https:443" ng-pattern=serviceRegex>
+                        <div flex-gt-sm="" layout-gt-sm="row">
+                            <div flex-gt-sm="" layout-gt-sm="column">
+                                <md-chips ng-model="serviceList" readonly="true" required="" md-removable="true">
+                                    <md-chip-template>
+                                        <span>
+                                        <strong>{{$chip}}</strong>
+                                    </span>
+                                    </md-chip-template>
+                                    <!-- <button md-chip-remove="" class="md-primary">
+                                    <md-icon md-svg-icon="assets/img/close.svg"></md-icon> -->
+                                </button>
+                                </md-chips>
+                                <div flex-gt-sm="" layout-gt-sm="row">
+                                    <md-input-container class="md-block" flex-gt-sm="">
+                                        <label>Dienste und Ports</label>
+                                        <input name="servicePortInput" ng-model="addServicePort" placeholder="http:80" ng-pattern=serviceRegex>
 
-                            <div class="hint" ng-show="showHints">Dienste des Geräts und dazugehörige Ports</div>
+                                        <div class="hint" ng-show="showHints">Dienste des Geräts und dazugehörige Ports</div>
 
-                            <div ng-messages="deviceForm.servicePortInput.$error">
-                                <div ng-message-exp="required">Ein Device muss mindestens einen erreichbaren Dienst anbieten.</div>
-                                <div ng-message="pattern">Das entspricht nicht dem erwarteten Muster.</div>
+                                        <div ng-messages="deviceForm.servicePortInput.$error">
+                                            <div ng-message="pattern">Das entspricht nicht dem erwarteten Muster.</div>
+                                            <div ng-message="empty">Ein leeres Feld kann nicht hinzugefügt werden.</div>
+                                        </div>
+
+                                    </md-input-container>
+                                    <md-button layout-align="center end" class="md-icon-button md-primary" aria-label="Settings" ng-click="addService()">
+                                        <md-icon md-svg-icon="assets/img/add_black.svg"></md-icon>
+                                    </md-button>
+                                </div>
                             </div>
-                        </md-input-container>
-
+                        </div>
                     </div>
 
                     <div flex="5" hide-xs="" hide-sm="">

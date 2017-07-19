@@ -1,4 +1,4 @@
-<md-dialog aria-label="Device {{caption}}" flex=50>
+<md-dialog aria-label="Device {{caption}}" flex=40>
     <md-toolbar>
         <div class="md-toolbar-tools">
             <h2>Device {{caption}}</h2>
@@ -11,8 +11,8 @@
 
 
 
-    <md-dialog-content style="max-width:800px;max-height:1400px;" md-autofocus>
-        <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="always">
+    <md-dialog-content style="max-width:800px;max-height:1400px;min-width:400px" md-autofocus>
+        <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="always" flex>
 
             <md-tab ng-repeat="vuln in vulns" label="{{vuln.type}}" flex layout-fill>
                 <div layout="column" layout-fill>
@@ -29,8 +29,8 @@
                             <div layout="column" flex>
                                 <h4>Aktionen</h4>
                                 <div layout="row" flex layout-align="center">
-                                    <md-button layout-align="center" class="md-raised md-primary" ng-click="fix()" ng-if="vuln.actions.fix"> Beheben </md-button>
-                                    <md-button layout-align="center" class="md-raised md-primary" ng-click="fix()" ng-if="vuln.actions.ignore"> Ignorieren </md-button>
+                                    <md-button layout-align="center" class="md-raised md-primary" ng-click="fix(vuln)" ng-if="vuln.actions.fix"> Beheben </md-button>
+                                    <md-button layout-align="center" class="md-raised md-primary" ng-click="fix(vuln)" ng-if="vuln.actions.ignore"> Ignorieren </md-button>
                                 </div>
                             </div>
                         </div>
@@ -45,9 +45,6 @@
             <span flex></span>
             <md-button ng-click="cancel()">
                 Abbrechen
-            </md-button>
-            <md-button ng-click="createDevice()" class="md-primary">
-                {{action}}
             </md-button>
         </md-dialog-actions>
         </form>

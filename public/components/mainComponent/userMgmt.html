@@ -1,68 +1,77 @@
 <div>
     <md-content class="layout-row" layout-align="center start" layout-xs="column">
         <div class="layout-column" flex=30>
-        <md-card>
-            <form name="userInfoForm" autocomplete="off" ng-submit="updateUserData()">
+            <md-card>
+                <form name="userInfoForm" autocomplete="off" ng-submit="updateUserData()">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">User Information</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content>
+                        <md-content class="layout-column" layout-align=" stretch">
+                            <div>
+                                <md-input-container class="md-block" flex=90>
+                                    <label>Name</label>
+                                    <input ng-model="user.username">
+                                </md-input-container>
+                            </div>
+                            <div>
+                                <md-input-container class="md-block" flex=90>
+                                    <label>Email</label>
+                                    <input ng-model="user.mail" type="email">
+                                </md-input-container>
+                            </div>
+                        </md-content>
+                    </md-card-content>
+                    <md-card-actions layout="row" layout-align="end center">
+                        <md-button class="md-raised" ng-click="changePassword($event, user)">Passwort ändern</md-button>
+                        <div flex></div>
+                        <md-button class="md-raised" type="submit">Speichern</md-button>
+                    </md-card-actions>
+                </form>
+            </md-card>
+        </div>
+        <div class="layout-column" flex=30>
+            <md-card>
                 <md-card-title>
                     <md-card-title-text>
-                        <span class="md-headline">User Information</span>
+                        <span class="md-headline">User Settings</span>
                     </md-card-title-text>
                 </md-card-title>
                 <md-card-content>
                     <md-content class="layout-column" layout-align=" stretch">
                         <div>
-                            <md-input-container class="md-block" flex=90>
-                                <label>Name</label>
-                                <input ng-model="user.username">
-                            </md-input-container>
-                        </div>
-                        <div>
-                            <md-input-container class="md-block" flex=90>
-                                <label>Email</label>
-                                <input ng-model="user.mail" type="email">
+                            <md-input-container class="md-block">
+                                <md-switch md-no-ink ng-change="switchMail()" ng-model="user.notification_on">
+                                    Benachrichtigungen per Email
+                                </md-switch>
+                                <md-switch ng-disabled="!user.notification_on" md-no-ink ng-change="switchNotify()" ng-model="user.settings.mail_risk">
+                                    Benachrichtigungen bei Sicherheitslevel
+                                </md-switch>
+                                <md-slider-container ng-disabled="!user.settings.mail_risk">
+                                    <md-slider id="riskslider" ng-model="user.settings.risklevel" aria-label="Risikolevel" step="1" min="1" max="10" flex md-discrete></md-slider>
+                                    <input flex=20 type="number" ng-model="user.settings.risklevel" ng-model-options="{ updateOn: 'change' }" aria-label="Risikolevel" min="1" max="10" aria-controls="riskslider">
+                                </md-slider-container>
+
                             </md-input-container>
                         </div>
                     </md-content>
                 </md-card-content>
-                <md-card-actions layout="row" layout-align="end center">
-                    <md-button class="md-raised" type="submit">Speichern</md-button>
-                </md-card-actions>
-            </form>
-        </md-card>
-    </div>
-    <div class="layout-column" flex=30>
-        <md-card>
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">User Settings</span>
-                </md-card-title-text>
-            </md-card-title>
-            <md-card-content>
-                <md-content class="layout-column" layout-align=" stretch">
-                    <div>
-                        <md-input-container class="md-block">
-                            <md-switch md-no-ink ng-change="switchChange()" ng-model="user.notification_on">
-                                Benachrichtigungen per Email
-                            </md-switch>
 
-                        </md-input-container>
-                    </div>
-                </md-content>
-            </md-card-content>
-
-            </md-card-content>
-        </md-card>
-        <md-card>
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">User Passwort</span>
-                </md-card-title-text>
-            </md-card-title>
+                </md-card-content>
+            </md-card>
+            <!-- <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">User Passwort</span>
+                    </md-card-title-text>
+                </md-card-title>
                 <md-card-actions layout="row" layout-align="center center">
                     <md-button class="md-raised" ng-click="changePassword($event, user)">Passwort ändern</md-button>
                 </md-card-actions>
-        </md-card>
-    </div>
+            </md-card> -->
+        </div>
     </md-content>
 </div>
 <treasure-overlay-spinner style="height: 100%" active=carSharingAllSpinner>

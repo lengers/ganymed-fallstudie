@@ -60,10 +60,26 @@ angular
       let quickFixController = ($scope, $mdDialog, $mdToast, $state) => {
         $scope.cancel = () => {
           $mdDialog.cancel()
+          $state.reload()
         }
 
-        $scope.fix = () => {
-
+        $scope.fix = (vuln) => {
+          console.log('lol')
+          let fixReq = {
+            method: 'GET',
+            url: '/scanforge/fix/' + $scope.previousScans[0].scan_no + '/' + vuln.device,
+            headers: {
+              'token': $sessionStorage.token
+            }
+          }
+          console.log(fixReq)
+          $http(fixReq).success((data) => {
+          })
+          let index = $scope.vulns.indexOf(vuln)
+          $scope.vulns.splice(index, 1)
+          if (vulns.length <= 0) {
+            $scope.cancel()
+          }
         }
 
         $scope.getScans = (type) => {
@@ -87,6 +103,7 @@ angular
 
             $http(groupsReq).success((data) => {
               $scope.vulns = data.data.results.vulnerabilities
+              console.log($scope.vulns)
             })
           })
         }
