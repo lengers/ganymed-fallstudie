@@ -25,6 +25,8 @@ angular
       $scope.port = {}
       $scope.risk = {}
 
+      $scope.disableQuickfix = false
+
       $scope.viewScans = () => {
         $state.go('main.scan')
       }
@@ -77,7 +79,7 @@ angular
           })
           let index = $scope.vulns.indexOf(vuln)
           $scope.vulns.splice(index, 1)
-          if (vulns.length <= 0) {
+          if ($scope.vulns.length <= 0) {
             $scope.cancel()
           }
         }
@@ -103,7 +105,6 @@ angular
 
             $http(groupsReq).success((data) => {
               $scope.vulns = data.data.results.vulnerabilities
-              console.log($scope.vulns)
             })
           })
         }
@@ -136,6 +137,9 @@ angular
           $scope.risk.series = data.data.results.chartdata.risks.risks
           $scope.risk.count = data.data.results.chartdata.risks.count
           $scope.overallRisk = data.data.results.overallRisk
+          if (data.data.results.vulnerabilities.length === 0) {
+            $scope.disableQuickfix = true
+          }
 
           $scope.colorArray = ['#009933', '#47d147', '#ccff33', '#e6e600', '#ff9900', '#e68a00', '#e62e00', '#cc2900', '#cc0000', '#990000']
                 //   Alternative
