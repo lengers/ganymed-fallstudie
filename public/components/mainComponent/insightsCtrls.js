@@ -43,6 +43,21 @@ angular
         }
       })
 
+      $scope.radarChartSettings = {
+        scale: {
+          ticks: {
+            scaleBeginAtZero: true,
+            steps: 1,
+            stepValue: 1,
+            min: 0,
+            max: 5
+          }
+        },
+        legend: {
+          display: false
+        }
+      }
+
       $scope.getScans = (type) => {
         let scanReq = {
           method: 'GET',
@@ -66,14 +81,12 @@ angular
             $scope.scanresults = data.data.results
 
             $scope.vulnerabilities = data.data.results.chartdata.vulnerabilities
+            $scope.highestVulnCount = Math.max.apply(Math, $scope.vulnerabilities.count)
+            $scope.radarChartSettings.scale.ticks.max = $scope.highestVulnCount + 1
+
             $scope.risk = data.data.results.chartdata.risks
 
             $scope.vulns = data.data.results.vulnerabilities
-            // for (var nr in data.data.results.devices) {
-            //   for (var vuln in data.data.results.devices[nr].vulnerabilities) {
-            //     $scope.vulns.push(data.data.results.devices[nr].vulnerabilities[vuln])
-            //   }
-            // }
           })
         })
 

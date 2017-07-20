@@ -79,6 +79,45 @@ const notifyUser = (userMail, about, body) => {
   }
 }
 
+const notifyRisklevel = (riskLevel, username) => {
+  const getUsersQuery = 'SELECT * FROM user;'
+  connection.query(getUsersQuery, (error, results, fields) => {
+    if (error) throw error
+    for (var i = 0; i < results.length; i++) {
+      if ((results[i].settings !== null) && (results[i].settings.mail_risk !== null) && (results[i].settings.risklevel !== null)) {
+        let settings = JSON.parse(results[i].settings)
+        let mail = results[i].mail
+        let username = results[i].username
+        if (riskLevel >= settings.risklevel) {
+          const bodyPath = path.join(__dirname, '..', '..', 'public', 'assets', 'mailbodies', 'risk.html')
+          fs.readFile(bodyPath, (err, rawMailBody) => {
+            if (err) throw err
+            let mailBody = rawMailBody.toString().replace('{username}', username).replace('{Risikolevel}', riskLevel)
+            notifyUser(mail, 'Ganymed: Sicherheitsrisko', mailBody)
+          })
+        }
+      }
+    }
+  })
+}
+
+const notifyLoginTries = (username) => {
+  const getUsersQuery = 'SELECT * FROM user WHERE username = ?;'
+  connection.query(getUsersQuery, [username], (error, results, fields) => {
+    if (error) throw error
+    if ((results[0].mail !== null) && (Boolean(results[0].notification_on) === true)) {
+      let mail = results[0].mail
+      let username = results[0].username
+      const bodyPath = path.join(__dirname, '..', '..', 'public', 'assets', 'mailbodies', 'login.html')
+      fs.readFile(bodyPath, (err, rawMailBody) => {
+        if (err) throw err
+        let mailBody = rawMailBody.toString().replace('{username}', username)
+        notifyUser(mail, 'Ganymed: Wiederholte Loginversuche', mailBody)
+      })
+    }
+  })
+}
+
 let loginHashmap = new HashMap()
 
 // Mocking scans requires these constiables
@@ -115,9 +154,11 @@ api
         } else {
           if (loginHashmap.has(req.body.name)) {
             let loginCount = loginHashmap.get(req.body.name)
+            console.log(req.body.name + ': ' + loginCount)
             loginHashmap.set(req.body.name, loginCount + 1)
-            if ((loginCount + 1 >= 4) && (results[0].notification_on === true)) {
-              notifyUser(results[0].mail, '[!] Wiederholte Loginversuche', 'test')
+            if ((loginCount >= 4) && (Boolean(results[0].notification_on) === true)) {
+              console.log('Sending mail')
+              notifyLoginTries(req.body.name)
               loginHashmap.set(req.body.name, 0)
             }
           } else {
@@ -140,7 +181,6 @@ api
             status: 'invalid'
           })
         } else {
-          console.log('DEBUG: ' + decoded)
           res.status(200).json({
             status: 'ok',
             data: decoded
@@ -517,6 +557,7 @@ api
               if (error) throw error
               let scanResult = JSON.parse(body).data
               console.log(JSON.parse(body).data)
+              notifyRisklevel(scanResult.overallRisk)
 
               const resultFilePath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', scanUuid + '.json')
               fs.writeFile(resultFilePath, JSON.stringify(JSON.parse(body).data), (err) => {
