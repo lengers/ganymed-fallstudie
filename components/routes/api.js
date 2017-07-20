@@ -332,40 +332,48 @@ api
         }
       })
     })
-    .put('/users/:username', checkJwtAdmin, (req, res) => {
+    .put('/users/:username', checkJwt, (req, res) => {
       console.log(req.body)
       var createQuery = ''
       var params = []
       var hash = ''
-      if ((req.body.password === '') || (req.body.password === null) || (req.body.password === null)) {
-        createQuery = 'UPDATE user SET username = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
-        params = [req.body.username, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
-      } else {
+      console.log(req.headers.decoded)
+      if ((req.params.username === req.headers.decoded.name) || (req.headers.decoded.group === 'admin')) {
+        if ((req.body.password === '') || (req.body.password === null) || (req.body.password === null)) {
+          createQuery = 'UPDATE user SET username = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
+          params = [req.body.username, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
+        } else {
           // Create password hash
-        hash = bcrypt.hashSync(req.body.password, 10)
-        createQuery = 'UPDATE user SET username = ?, `hash` = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
-        params = [req.body.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
-      }
-      try {
+          hash = bcrypt.hashSync(req.body.password, 10)
+          createQuery = 'UPDATE user SET username = ?, `hash` = ?, `group` = ?, settings = ?, mail = ?, notification_on = ? WHERE username = ?;'
+          params = [req.body.username, hash, req.body.group, JSON.stringify(req.body.settings), req.body.mail, req.body.notification_on, req.params.username]
+        }
+        try {
             // Update user
-        connection.query(createQuery, params, (error, results, fields) => {
-          if (error) {
-            res.status(500).json({
-              status: 'error',
-              data: error
-            })
-            throw error
-          } else {
-            res.status(200).json({
-              status: 'ok',
-              data: 'The user was updated.'
-            })
-          }
-        })
-      } catch (e) {
-        res.status(500).json({
+          connection.query(createQuery, params, (error, results, fields) => {
+            if (error) {
+              res.status(500).json({
+                status: 'error',
+                data: error
+              })
+              throw error
+            } else {
+              res.status(200).json({
+                status: 'ok',
+                data: 'The user was updated.'
+              })
+            }
+          })
+        } catch (e) {
+          res.status(500).json({
+            status: 'error',
+            data: 'This user seems to already exist.'
+          })
+        }
+      } else {
+        res.status(401).json({
           status: 'error',
-          data: 'This user seems to already exist.'
+          data: 'You are not authorized to do this.'
         })
       }
     })
@@ -393,7 +401,7 @@ api
         })
       }
     })
-    .get('/users', checkJwtAdmin, (req, res) => {
+    .get('/users', checkJwt, (req, res) => {
       try {
         const createQuery = 'SELECT * FROM user;'
         connection.query(createQuery, (error, results, fields) => {
@@ -417,7 +425,7 @@ api
         })
       }
     })
-    .get('/users/:username', checkJwtAdmin, (req, res) => {
+    .get('/users/:username', checkJwt, (req, res) => {
       try {
         const createQuery = 'SELECT * FROM user WHERE username = ?;'
         connection.query(createQuery, [req.params.username], (error, results, fields) => {
