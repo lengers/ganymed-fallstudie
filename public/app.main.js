@@ -6,9 +6,7 @@ angular
             // tools
     'ui.router', 'ngMaterial',
             // components
-    'mainComponent.main',
-            // services, factories, filters
-    'debuggingServices'
+    'mainComponent.main'
   ])
     .config(['$mdThemingProvider', '$urlRouterProvider', '$qProvider', function ($mdThemingProvider, $urlRouterProvider, $qProvider) {
       $mdThemingProvider

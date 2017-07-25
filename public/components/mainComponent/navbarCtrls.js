@@ -1,7 +1,7 @@
 'use strict'
 angular
     .module('navbarCtrls', ['ngMaterial', 'ngStorage'])
-    .controller('navbarCtrl', function ($scope, $timeout, $mdSidenav, $http, $state, $log, $mdDialog, $mdMedia, $rootScope, $sessionStorage, $localStorage, watcherDebugService) {
+    .controller('navbarCtrl', function ($scope, $timeout, $mdSidenav, $http, $state, $log, $mdDialog, $mdMedia, $rootScope, $sessionStorage, $localStorage) {
       $scope.checkAdmin = () => {
         let req = {
           method: 'GET',
