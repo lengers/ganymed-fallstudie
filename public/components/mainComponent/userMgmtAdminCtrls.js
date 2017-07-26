@@ -1,3 +1,13 @@
+/* -------------------------userMgmtAdminCtrls.js------------------------------------
+ *
+ * This is the controller which realizes the functionality for the
+ * Admin-Style view for the User Management  (userMgmtAdmin.html).
+ * Since the user has the authorization to edit the other uses
+ * (delete, alter group, create new users etc.) the Admin needs a
+ * different view and controllerfor the same functionality
+ * which is UserManagement here.
+ *
+ * ------------------------------------------------------------------- */
 'use strict'
 angular
     .module('userMgmtAdminCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
@@ -32,6 +42,7 @@ angular
         }
       }
     })
+    //default: do not receive mails and notification_on:false
     .controller('userMgmtAdminCtrl', function ($scope, $http, $state, $mdDialog, $rootScope, $localStorage, $mdToast, $sessionStorage) {
       $rootScope.newUser = {
         username: '',
@@ -45,9 +56,11 @@ angular
         notification_on: false
       }
 
+      //since Admin has authorization -> let him edit and delete => set disable to false
       $scope.disallowEdit = false
       $scope.disallowDelete = false
 
+      //if token is not valid/undefined => logout user and show login page
       if ($sessionStorage.token === undefined) {
         $state.go('login')
       };
@@ -60,20 +73,29 @@ angular
       }
       $http(req).then(function (res, error) {
         if (res.data.status != 'ok') {
+          // if status is not ok after auth check => show login page
           $state.go(login)
         } else {
+          //decode result to check: admin or not
           $scope.decoded = res.data.data
+          // no admin
           if ($scope.decoded.group !== 'admin') {
             console.log('Not Admin!')
+            //show UserMgmt for normal users
             $state.go('main.account')
           } else {
+            //Admin => retrieve all user data
             $scope.updateUsersData()
           }
         }
       })
 
+      //admin is allowed to create new users
       $scope.disallowNewUser = false
 
+      //count admins and users to prevent a case
+      // in which a admin could be the last and delete himself
+      // would mean no admin access anymore to manage any users
       $scope.allowEdit = (user) => {
         if ($scope.decoded.name === user.username) {
           return true
@@ -82,6 +104,7 @@ angular
         }
       }
 
+      //retrieve user data via api call
       $scope.updateUsersData = function (type) {
         var req = {
           method: 'GET',
@@ -90,10 +113,10 @@ angular
             'token': $sessionStorage.token
           }
         }
-            // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
+      // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
         $http(req).success(function (data) {
           $scope.users = data.data
-          console.log($scope.users)
+          // max number of users (admin or not) is 4
           if (data.data.length >= 4) {
             $scope.disallowNewUser = true
           } else {
@@ -121,7 +144,7 @@ angular
               'token': $sessionStorage.token
             }
           }
-                // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
+          // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
           $http(req).success(function (data) {
             $mdToast.show(
                         $mdToast.simple()
@@ -131,6 +154,7 @@ angular
                     )
             if ($scope.decoded.name === user.username) {
               $sessionStorage.token = null
+              // if a admin deletes himself => log him out right away
               $state.go('login')
             }
           }).then($state.reload())
@@ -141,6 +165,7 @@ angular
         $state.reload()
       }
 
+      //scope to edit user
       $scope.editUser = function (ev, user) {
         console.log(user)
         $rootScope.newUser = {
@@ -152,7 +177,7 @@ angular
           mail: user.mail,
           notification_on: user.notification_on
         }
-
+      // show user dialogue to edit users
         $mdDialog.show({
           controller: EditDialogController,
           templateUrl: '/components/mainComponent/dialogs/editUser.html',
@@ -176,7 +201,7 @@ angular
         }).then($state.reload())
             // $scope.updateUsersData();
       }
-
+      // get profile groups {Admin, User}
       function AddDialogController ($scope, $mdDialog) {
         const groupsReq = {
           method: 'GET',
@@ -206,7 +231,7 @@ angular
           $mdDialog.cancel()
         }
 
-            // Code recyclen...
+            // recycle some code...
         $scope.answer = function (answer) {
           if (answer === 'abort') {
             $mdDialog.cancel()
@@ -215,7 +240,7 @@ angular
             // console.log($scope.userForm.$valid)
             // $scope.userForm.name.$setValidity('required', false)
             if ($scope.userForm.$valid) {
-                        // check if user exists
+            // check if user exists
               const userCheckReq = {
                 method: 'GET',
                 url: '/api/users/' + $scope.newUser.username,
@@ -227,6 +252,7 @@ angular
                 if (data.data.length != 0) {
                   $scope.userForm.name.$setValidity('default', false)
                 } else {
+                  //create new user with input data
                   const userCreateReq = {
                     method: 'POST',
                     url: '/api/users/' + $scope.newUser.username,
@@ -277,7 +303,7 @@ angular
           }
         }
       }
-
+      //Edit users
       function EditDialogController ($scope, $mdDialog, $rootScope) {
         const groupsReq = {
           method: 'GET',
@@ -298,7 +324,7 @@ angular
           $mdDialog.cancel()
         }
 
-            // Code recyclen...
+            // recycle some code again ...
         $scope.answer = function (answer) {
           if (answer === 'abort') {
             $mdDialog.cancel()
@@ -312,6 +338,7 @@ angular
               }
             }
             $http(userCheckReq).success(function (data) {
+              // if result is valid => perform update with input data
               if (data.data.length != 0) {
                 const userUpdateReq = {
                   method: 'PUT',
@@ -330,6 +357,7 @@ angular
                     notification_on: $scope.newUser.notification_on
                   }
                 }
+                //inform user about successful changes
                 $http(userUpdateReq).success(function (data) {
                   $mdDialog.hide(answer)
 

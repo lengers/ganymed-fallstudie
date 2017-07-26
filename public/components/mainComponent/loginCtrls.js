@@ -1,3 +1,11 @@
+/* -------------------------loginCtrls.js------------------------------------
+ * This is the controller which provides functionality for the login-view (login.html)
+ * This file includes functionality to ask for the users credential and route this payload
+ * to auth endpoint to get the user authenticated. On success user is routed to dashboard.
+ *
+ * ------------------------------------------------------------------- */
+
+
 'use strict'
 angular
     .module('loginCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
@@ -16,12 +24,13 @@ angular
 
             // function that is invoked after trying to login
           $scope.update = function (user) {
-                // when success, give token and go to dashboard
+                // when success, provide token and route to dashboard
             $http.post('/api/auth', {name: user.name, password: user.password})
                 .then(function (response) {
                   $localStorage.token = response.data.token
                   $sessionStorage.token = response.data.token
                   window.location = '/'
+                  //show dashboard
                   $state.go('main.overview')
                 })
                 .catch((response) => {

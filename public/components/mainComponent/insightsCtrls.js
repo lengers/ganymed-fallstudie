@@ -1,4 +1,11 @@
-// Credits to Tobias Rahloff (https://github.com/trahloff) for assitance with chart.js
+/* -------------------------insightsCtrls.js------------------------------------
+ * This is the controller which provides functionality for the insights-view (insights.html)
+ * This file includes functionality to visualize vulnerable services, and the risk distribution among devices.
+ * Furthermore found threats are displayed, if there are any, with the offer to immediate fix them (mocked)
+ *
+ * ------------------------------------------------------------------- */
+
+// Credits to Tobias Rahloff (https://github.com/trahloff) for assistance with chart.js
 'use strict'
 angular
     .module('insightsCtrls', ['ngMaterial', 'ngMessages', 'ngStorage', 'chart.js'])
@@ -24,6 +31,7 @@ angular
       })
     }])
     .controller('insightsCtrl', function ($scope, $http, $state, $rootScope, $localStorage, $mdToast, $mdDialog, $sessionStorage, $timeout) {
+      // if token is not valid/undefined => show login page
       if ($sessionStorage.token === undefined) {
         $state.go('login')
       };
@@ -58,6 +66,8 @@ angular
         }
       }
 
+      //get scan results in order to display vulnerable services and risk distribution
+      // via Api endpoint
       $scope.getScans = (type) => {
         let scanReq = {
           method: 'GET',
@@ -77,11 +87,14 @@ angular
             }
           }
 
+          //retrieve vulnerabilities, maximum count of vulnerabilieties and settings from scan
+          // which has beencreated with mock data via scanforge.js
           $http(groupsReq).success((data) => {
             $scope.scanresults = data.data.results
 
             $scope.vulnerabilities = data.data.results.chartdata.vulnerabilities
             $scope.highestVulnCount = Math.max.apply(Math, $scope.vulnerabilities.count)
+            // to keep the chart from displaying peaks out of scope
             $scope.radarChartSettings.scale.ticks.max = $scope.highestVulnCount + 1
 
             $scope.risk = data.data.results.chartdata.risks
@@ -90,6 +103,7 @@ angular
           })
         })
 
+        // get devices to display in risk distribution chart
         let devicesReq = {
           method: 'GET',
           url: '/api/devices',
@@ -102,6 +116,7 @@ angular
         })
       }
 
+      //view threats found in latest scan
       $scope.viewThreat = (ev, vuln) => {
         $rootScope.vuln = vuln
         $rootScope.scanNo = $scope.previousScans[0].scan_no
@@ -126,6 +141,7 @@ angular
           $state.reload()
         }
 
+        // functionality for immediate fixing (mocked via Scanforge.js)
         $scope.fix = () => {
           let fixReq = {
             method: 'GET',

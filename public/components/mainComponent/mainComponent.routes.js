@@ -1,3 +1,9 @@
+/* -------------------------mainComponent.routes.js------------------------------------
+ *
+ * This is the .js file which maps the view to the corresponding controller and the url-route.
+ *
+ * ------------------------------------------------------------------- */
+
 angular
     .module('mainComponentRoutes', [])
     .config(['$stateProvider', function ($stateProvider) {

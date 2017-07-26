@@ -1,7 +1,13 @@
+/* -------------------------navbarCtrls.js------------------------------------
+ *
+ * This is the controller which realizes the foldout menu bar and its links to other sites of Ganymed.
+ *
+ * ------------------------------------------------------------------- */
 'use strict'
 angular
     .module('navbarCtrls', ['ngMaterial', 'ngStorage'])
     .controller('navbarCtrl', function ($scope, $timeout, $mdSidenav, $http, $state, $log, $mdDialog, $mdMedia, $rootScope, $sessionStorage, $localStorage) {
+                  //Belongs the User to the profile group "admin"?
       $scope.checkAdmin = () => {
         let req = {
           method: 'GET',
@@ -10,6 +16,7 @@ angular
             'token': $sessionStorage.token
           }
         }
+                  //yes, the user is admin => show expanded account view, with possibility to alter other users
         $http(req).success(function (data) {
           if (data.data.group === 'admin') {
             $state.go('main.account.admin')
@@ -44,6 +51,7 @@ angular
         toggleFullscreenButton()
       }
 
+      // if user wants to logout => show login page
       $scope.logout = () => {
         $mdSidenav('left').close()
         $sessionStorage.token = null

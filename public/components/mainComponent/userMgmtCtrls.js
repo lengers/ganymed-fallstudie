@@ -1,3 +1,14 @@
+/* -------------------------userMgmtCtrls.js------------------------------------
+ *
+ * This is the controller which realizes the functionality for the
+ * Prdinary-user-Style view for the User Management  (userMgmt.html).
+ * Since the ordinary user has no authorization to edit the other uses
+ * (delete, alter group, create new users etc.) he needs to see a
+ * limited view and controllerfor only to manage his own user settings
+ * like password, mail settings etc.
+ *
+ * ------------------------------------------------------------------- */
+
 'use strict'
 angular
     .module('userMgmtCtrls', ['ngMaterial', 'ngMessages', 'ngStorage'])
@@ -11,12 +22,14 @@ angular
           risklevel: 1
         }
       }
-
+      //default: no mail notifications
       $scope.data = {
         sendmail: false
       }
 
+      //normal user auth check instead of admin auth check, like in userMgmtCtrls.js
       if ($sessionStorage.token === undefined) {
+        // if token is not valid/undefined => show login page
         $state.go('login')
       };
       var req = {
@@ -40,6 +53,7 @@ angular
         }
       })
 
+      //retrieve information about current user using his decoded user name
       $scope.getUserData = function (type) {
         var req = {
           method: 'GET',
@@ -49,8 +63,11 @@ angular
           }
         }
         $http(req).success(function (data) {
+          // on success fill scope with current user data
           $scope.user = data.data[0]
           $scope.user.notification_on = Boolean(data.data[0].notification_on)
+          //parse settings data which comes via api from local db
+          // which is stored in local db as JSON
           $scope.user.settings = JSON.parse(data.data[0].settings)
         //   console.log(JSON.parse(data.data[0].settings).mail_risk)
         //   $scope.user.settings.mail_risk = Boolean(data.data[0].settings.mail_risk)
@@ -58,7 +75,8 @@ angular
         //   console.log($scope.user)
         })
       }
-
+      // ask user to enter mail adress, when he turns on mail notification_on
+      // and has not yet provided an adress
       $scope.switchMail = () => {
         if ($scope.user.mail === null) {
           console.log('toast')
@@ -70,7 +88,8 @@ angular
           $scope.user.notification_on = false
         }
       }
-
+      //update functionality via API endpoint call
+      // PUT input data with the call
       $scope.updateUserData = function () {
         console.log($scope.user)
         const userUpdateReq = {
@@ -88,6 +107,7 @@ angular
             notification_on: $scope.user.notification_on
           }
         }
+        //inform user about the successful saving
         $http(userUpdateReq).success(function (data) {
           $state.reload()
           $mdToast.show(
@@ -98,7 +118,7 @@ angular
                 )
         })
       }
-
+      //user dialog to change password
       $scope.changePassword = function (ev, user) {
         $rootScope.user = user
         $mdDialog.show({
@@ -113,7 +133,9 @@ angular
       }
 
       function passwordDialogController ($scope, $mdDialog) {
+        //set current user in local scope
         $scope.user = $rootScope.user
+        //prepare for password comparison
         $scope.user.password = ''
         $scope.user.passwordConfirm = ''
 
@@ -121,6 +143,7 @@ angular
           $mdDialog.cancel()
         }
 
+        // after confirmation update user in local db
         $scope.answer = function (answer) {
           if (answer === 'abort') {
             $mdDialog.cancel()
@@ -144,6 +167,7 @@ angular
                 }
               }
               $http(userUpdateReq).success(function (data) {
+                //on success inform user about successful saving
                 console.log(data)
                 $mdDialog.hide(answer)
 
