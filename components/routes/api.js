@@ -23,7 +23,7 @@ let transporter = nodemailer.createTransport({
     pass: 'aenue8Phieyoh3Xahgh5niaGh7ofo3ei'
   }
 })
-
+// Connection to mysql server
 const mysql = require('mysql')
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -31,7 +31,10 @@ const connection = mysql.createConnection({
   password: 'mysqlpass',
   database: 'Ganymed'
 })
-
+/* =========================================================== check auth ===========================================================
+ *  Checks if a user is authenticated.
+ *
+ */
 const checkJwt = (req, res, next) => {
   jwt.verify(req.headers.token, secret, (err, decoded) => {
     if (err) {
@@ -45,7 +48,10 @@ const checkJwt = (req, res, next) => {
     }
   })
 }
-
+/* =========================================================== check admin ===========================================================
+ *  Checks if a user is member of the group admin.
+ *
+ */
 const checkJwtAdmin = (req, res, next) => {
   jwt.verify(req.headers.token, secret, (err, decoded) => {
     if (err || decoded.group !== 'admin') {
@@ -58,7 +64,10 @@ const checkJwtAdmin = (req, res, next) => {
     }
   })
 }
-
+/* =========================================================== notify send ===========================================================
+ *  Implements the mail sending mechanism.
+ *
+ */
 const notifyUser = (userMail, about, body) => {
   if (userMail !== null) {
     let mailOptions = {
@@ -79,6 +88,10 @@ const notifyUser = (userMail, about, body) => {
   }
 }
 
+/* =========================================================== notify risklevel ===========================================================
+ *  Checks if user wants to receive notifications and if the risk level meets the level defined by the user for information mails. Then a mail is sent.
+ *
+ */
 const notifyRisklevel = (riskLevel, username) => {
   const getUsersQuery = 'SELECT * FROM user;'
   connection.query(getUsersQuery, (error, results, fields) => {
@@ -101,6 +114,10 @@ const notifyRisklevel = (riskLevel, username) => {
   })
 }
 
+/* =========================================================== notify login tries ===========================================================
+ *  Checks if user wants to receive notifications, and sends a mail to the user witht he correct mail body.
+ *
+ */
 const notifyLoginTries = (username) => {
   const getUsersQuery = 'SELECT * FROM user WHERE username = ?;'
   connection.query(getUsersQuery, [username], (error, results, fields) => {
@@ -120,18 +137,27 @@ const notifyLoginTries = (username) => {
 
 let loginHashmap = new HashMap()
 
-// Mocking scans requires these constiables
+// Mocking scans requires these variables
 let scanUuid = ''
 let scanStart = ''
 let scanStartISO = ''
 let scanPercent = 0
 
 api
+    /* =========================================================== help ===========================================================
+     *  Easteregg. Replies as a teapot. An IoT teapot, of course.
+     *
+     */
     .get('/help', (req, res) => {
       res.status(418).json({
         status: "I'm a teapot."
       })
     })
+    /* =========================================================== auth ===========================================================
+     *  Validates a given username/password combination against the database. The password is hashed and the hash is compared to the value stored in the db.
+     *  If no such username exists, an error message is sent back. If username and password were correct, a new JWT token is created and sent back to the user.
+     *
+     */
     .post('/auth', (req, res) => {
       connection.query('SELECT * FROM user WHERE username = ?', [req.body.name], (error, results, fields) => {
         if (error) {
@@ -164,7 +190,6 @@ api
           } else {
             loginHashmap.set(req.body.name, 1)
           }
-          // TODO: Implement Sendmail option
           res.status(403).json({
             type: false,
             data: req.body.name,
@@ -173,6 +198,10 @@ api
         }
       })
     })
+    /* =========================================================== auth check ===========================================================
+     *  Check if a user token is valid.
+     *
+     */
     .get('/auth/check', (req, res) => {
       jwt.verify(req.headers.token, secret, (err, decoded) => {
         if (err) {
@@ -188,6 +217,10 @@ api
         }
       })
     })
+    /* =========================================================== devices ===========================================================
+     *  Sends back a list of all devices from the database.
+     *
+     */
     .get('/devices', checkJwt, (req, res) => {
       try {
         connection.query('SELECT * FROM device;', (error, results, fields) => {
@@ -203,6 +236,10 @@ api
         })
       }
     })
+    /* =========================================================== devices details ===========================================================
+     *  Sends back the details of a given device from the database. If no such device exists, an error message is sent back.
+     *
+     */
     .get('/devices/:uuid', checkJwt, (req, res) => {
       try {
         connection.query('SELECT * FROM device WHERE uuid = ?;', req.params.uuid, (error, results, fields) => {
@@ -218,6 +255,10 @@ api
         })
       }
     })
+    /* =========================================================== devices create ===========================================================
+     *  Creates a new device in the database.
+     *
+     */
     .post('/devices/:uuid', checkJwt, (req, res) => {
       const createQuery = 'INSERT INTO device (uuid, ip, mac, manufacturer, ports, risk_level, services, name, modell) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
       try {
@@ -242,6 +283,10 @@ api
         })
       }
     })
+    /* =========================================================== devices update ===========================================================
+     *  Updates the details of a device in the database.
+     *
+     */
     .put('/devices/:uuid', checkJwt, (req, res) => {
       const createQuery = 'UPDATE device SET uuid = ?, ip = ?, mac = ?, manufacturer = ?, ports = ?, risk_level = ?, services = ?, name = ?, modell = ? WHERE uuid = ?;'
       try {
@@ -266,6 +311,10 @@ api
         })
       }
     })
+    /* =========================================================== devices delete ===========================================================
+     *  Deletes a device from the database.
+     *
+     */
     .delete('/devices/:uuid', checkJwt, (req, res) => {
       const createQuery = 'DELETE FROM device WHERE uuid = ?;'
       try {
@@ -290,7 +339,11 @@ api
         })
       };
     })
-    // Expects {"password": "password", "group": "group", "settings: "JSON", "mail": "mail", "notification_on": BOOLEAN}
+    /* =========================================================== users create ===========================================================
+     *  Creates a new user in the database. Requires admin privileges.
+     *
+     *  Expects {"password": "password", "group": "group", "settings: "JSON", "mail": "mail", "notification_on": BOOLEAN}
+     */
     .post('/users/:username', checkJwtAdmin, (req, res) => {
       console.log(req.body)
         // Create password hash
@@ -332,6 +385,10 @@ api
         }
       })
     })
+    /* =========================================================== users update ===========================================================
+     *  Updates the information about a given user in the database. If a password is sent, the password is updated, if not, only other information are updated.
+     *
+     */
     .put('/users/:username', checkJwt, (req, res) => {
       console.log(req.body)
       var createQuery = ''
@@ -377,6 +434,10 @@ api
         })
       }
     })
+    /* =========================================================== users delete ===========================================================
+     *  Deletes a given user from the database. Requires admin privileges.
+     *
+     */
     .delete('/users/:username', checkJwtAdmin, (req, res) => {
       try {
         const createQuery = 'DELETE FROM user WHERE username = ?;'
@@ -401,6 +462,10 @@ api
         })
       }
     })
+    /* =========================================================== users get ===========================================================
+     *  Sends the information about all users from the database back to the user.
+     *
+     */
     .get('/users', checkJwt, (req, res) => {
       try {
         const createQuery = 'SELECT * FROM user;'
@@ -425,6 +490,10 @@ api
         })
       }
     })
+    /* =========================================================== users user ===========================================================
+     *  Sends the information about one given user from the database back to the user.
+     *
+     */
     .get('/users/:username', checkJwt, (req, res) => {
       try {
         const createQuery = 'SELECT * FROM user WHERE username = ?;'
@@ -449,6 +518,10 @@ api
         })
       }
     })
+    /* =========================================================== groups ===========================================================
+     *  Lists all groups saved in the database. Sends a response to the user, or an error, if the database responds in an unexpected way
+     *  Requires admin privileges.
+    */
     .get('/groups', checkJwtAdmin, (req, res) => {
       try {
         const createQuery = 'SELECT * FROM `group`;'
@@ -473,12 +546,15 @@ api
         })
       }
     })
+    /* =========================================================== scan ===========================================================
+     *  Lists all scans ordered by date, latest scan first. Sends an error message to user if a database error occurs.
+     *
+     */
     .get('/scan', checkJwt, (req, res) => {
       let answerdata = {
         running: null,
         previous: null
       }
-
       try {
         const createQuery = 'SELECT * FROM scan ORDER BY start_time DESC;'
         connection.query(createQuery, (error, results, fields) => {
@@ -499,9 +575,9 @@ api
         })
       }
     })
-    /* =========================================================== scan ===========================================================
-     *
-     *
+    /* =========================================================== scan start ===========================================================
+     *  Starts a scan if no other scan is running. If a scan is already running, state so.
+     *  Send a corresponding answer to the user.
      */
     .get('/scan/start', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
@@ -523,6 +599,10 @@ api
         })
       }
     })
+    /* =========================================================== scan status ===========================================================
+     *  Sets the current state of the scan according to time passed since scan creation date.
+     *  Send a status response to the user. If no scan with the UUID that has been provided by the user exists, an error message is sent back.
+     */
     .get('/scan/status/:uuid', checkJwt, (req, res) => {
         // If a scan is already running, tell the user so
       console.log(req.params.uuid)
@@ -547,6 +627,10 @@ api
         })
       }
     })
+    /* =========================================================== scan results ===========================================================
+     *  Sends back the results of a scan that have been provided by the scanforge utility, as real scans are currently not performed.
+     *  The results are parsed as JSON and are sent back to the user. If the scan is the one currently executed, results are created by scanforge. If the UUID is already in the database and not the currently performed scan, the results are read from the result file of this scan and sent back to the user.
+     */
     .get('/scan/results/:uuid', checkJwt, (req, res) => {
         // let scanUser = req.headers.decoded.name
 
@@ -628,6 +712,10 @@ api
         }
       }
     })
+    /* =========================================================== debug reset ===========================================================
+     *  Resets the database to the state defined in ganymed.sql
+     *  Will not be implemented in production build.
+     */
     .get('/debug/reset', (req, res) => {
       const sqlpath = path.join(__dirname, '..', '..', 'ganymed.sql')
       fs.readFile(sqlpath, (err, sqlquery) => {

@@ -15,16 +15,21 @@
                         <md-list-item class="md-3-line" ng-repeat="device in devices" ng-click="viewDevice($event, device)">
                             <md-divider></md-divider>
                             <div class="md-list-item-text" flex=30>
+                                <h3>{{ device.name }}</h3>
+                                <p>Name</p>
+                            </div>
+
+                            <div class="md-list-item-text" flex=25>
                                 <h3>{{ device.ip }}</h3>
                                 <p>IP-Adresse</p>
                             </div>
 
-                            <div class="md-list-item-text" flex=30>
+                            <div class="md-list-item-text" flex=20>
                                 <h3>{{ device.risk_level }}</h3>
                                 <p>Risiko-Level</p>
                             </div>
 
-                            <div class="md-list-item-text" flex=30>
+                            <div class="md-list-item-text" flex=25>
                                 <h3>{{ device.mac }}</h3>
                                 <p>MAC-Adresse</p>
                             </div>

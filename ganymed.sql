@@ -47,7 +47,7 @@ CREATE TABLE device (
 INSERT INTO `group`(Group_id, alter_device_list, run_scan, create_user, change_group) VALUES ('admin', true , true, true, true);
 INSERT INTO `group`(Group_id, alter_device_list, run_scan, create_user, change_group) VALUES ('user', true , true, false, false);
 
-INSERT INTO `user` (username, `hash`, `group`, settings, mail, notification_on) VALUES ("admin", "$2a$10$9B3aQ.iG8ekCH34yiIt9k.8D.EdMDIyMYenQRYr.sMsyzyA0B38p.", "admin", '{"mail_risk":true,"risklevel":5}', "thomas85@gmail.com", 1);
+INSERT INTO `user` (username, `hash`, `group`, settings, mail, notification_on) VALUES ("admin", "$2a$10$9B3aQ.iG8ekCH34yiIt9k.8D.EdMDIyMYenQRYr.sMsyzyA0B38p.", "admin", '{"mail_risk":true,"risklevel":5}', "thomas85@test.de.com", 1);
 INSERT INTO `user` (username, `hash`, `group`) VALUES ("user", "$2a$10$kXUZeHR.yhmTK1AFCfOHJOCp0QO0V4gEEmE2ECsYBTZaN1rPbz1P.", "user");
 
 INSERT INTO device (uuid, ip, mac, ports, risk_level, services, name) VALUES ("4c9a6f10-b862-44a0-89d6-a7e6f7fce535", "10.0.0.100", "E8:90:58:1B:89:9C", "80, 443", 4, "http, https", "IPCam Garage");
