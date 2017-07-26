@@ -97,26 +97,9 @@ angular
       // in which a admin could be the last and delete himself
       // would mean no admin access anymore to manage any users
       $scope.allowEdit = (user) => {
-        $scope.adminCount = 0
-        $scope.userCount = 0
-
-        //count admins and users
-        for (var i = 0; i < $scope.users; i++) {
-          if ($scope.users[i].group === 'admin') {
-            $scope.adminCount += 1
-          } else {
-            $scope.userCount += 1
-          }
-        }
-
-        if (($scope.adminCount <= 1) && (user.group === 'admin')) {
-          // if the user right now is the last admin
+        if ($scope.decoded.name === user.username) {
           return true
         } else {
-          return false
-        }
-
-        if (user.group === 'admin') {
           return false
         }
       }
