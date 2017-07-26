@@ -200,26 +200,26 @@ angular
         $scope.services = []
         $scope.ports = []
 
+        $scope.serviceList = []
         $scope.device = $rootScope.device
-        console.log($scope.device.services)
+        // console.log($scope.device.services)
         $scope.serviceArray = $scope.device.services.split(', ')
-        console.log($scope.device.ports)
+        // console.log($scope.device.ports)
         $scope.portArray = $scope.device.ports.split(', ')
         $scope.servicePortBuildArray = []
         for (var ec = 0; ec < $scope.serviceArray.length; ec++) {
-          $scope.servicePortBuildArray.push($scope.serviceArray[ec] + ':' + $scope.portArray[ec])
+          $scope.serviceList.push($scope.serviceArray[ec] + ':' + $scope.portArray[ec])
         }
-        console.log($scope.servicePortBuildArray)
-        $scope.servicePort = $scope.servicePortBuildArray.join(', ')
-        console.log($scope.servicePort)
 
         $scope.createDevice = function () {
-          let servicePortArr = $scope.servicePort.split(', ')
-          for (var i = 0; i < servicePortArr.length; i++) {
-            let splitArr = servicePortArr[i].split(':')
+          for (var i = 0; i < $scope.serviceList.length; i++) {
+            let splitArr = $scope.serviceList[i].split(':')
             $scope.services.push(splitArr[0])
             $scope.ports.push(splitArr[1])
           }
+          $scope.device.ports = $scope.ports.join(', ')
+          $scope.device.services = $scope.services.join(', ')
+
           $scope.device.ports = $scope.ports.join(', ')
           $scope.device.services = $scope.services.join(', ')
 

@@ -75,22 +75,9 @@ angular
       $scope.disallowNewUser = false
 
       $scope.allowEdit = (user) => {
-        $scope.adminCount = 0
-        $scope.userCount = 0
-        for (var i = 0; i < $scope.users; i++) {
-          if ($scope.users[i].group === 'admin') {
-            $scope.adminCount += 1
-          } else {
-            $scope.userCount += 1
-          }
-        }
-        if (($scope.adminCount <= 1) && (user.group === 'admin')) {
+        if ($scope.decoded.name === user.username) {
           return true
         } else {
-          return false
-        }
-
-        if (user.group === 'admin') {
           return false
         }
       }
@@ -106,6 +93,7 @@ angular
             // get's the mock-JSON and performs some operations on it to get count, etc and writes the values into scope
         $http(req).success(function (data) {
           $scope.users = data.data
+          console.log($scope.users)
           if (data.data.length >= 4) {
             $scope.disallowNewUser = true
           } else {
