@@ -9,7 +9,7 @@ angular
             name: '',
             password: ''
           }
-
+          // jazmin was here
           $scope.token = ''
 
           $scope.$storage = $localStorage
