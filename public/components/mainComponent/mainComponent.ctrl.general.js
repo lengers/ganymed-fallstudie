@@ -1,3 +1,10 @@
+/* -------------------------mainComponentCtrls.general.js------------------------------------
+ *
+ * This is the controller which provides functionality for the menu-bar.
+ *
+ * ------------------------------------------------------------------- */
+
+
 'use strict'
 angular
     .module('mainComponentCtrls', ['ngMaterial', 'ngMessages'])

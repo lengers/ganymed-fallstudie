@@ -1,3 +1,11 @@
+/* -------------------------app.js------------------------------------
+ *
+ * app.js is the script first  to be executed.
+ * In this file the specific routes are read and the webserver is started.
+ *
+ * ------------------------------------------------------------------- */
+
+
 const config = require('./components/config/express.json')
 const express = require('express')
 const app = express()

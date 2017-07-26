@@ -1,3 +1,9 @@
+/* -------------------------devicesCtrls.js------------------------------------
+ * This is the controller which provides functionality for the devices-view (devices.html)
+ * This file includes functionality to insert new devices, edit existing devices and delete them.
+ *
+ * ------------------------------------------------------------------- */
+
 'use strict'
 angular
     .module('devicesCtrls', ['ngMaterial', 'ngStorage'])
@@ -14,6 +20,7 @@ angular
         $scope.devices = data.data
       })
 
+      //functionality for userdialogue to delete a device
       $scope.deleteDevice = function (ev, device) {
         var confirm = $mdDialog.confirm()
                 .title('Ausgewähltes Device entfernen?')
@@ -24,6 +31,7 @@ angular
                 .cancel('Abbrechen')
                 .hasBackdrop(false)
 
+      //after confirmation the api endpoint to delete chosen device is called
         $mdDialog.show(confirm).then(function () {
           const deviceDeleteReq = {
             method: 'DELETE',
@@ -46,6 +54,7 @@ angular
         })
       }
 
+      // get details to a device in list
       $scope.viewDevice = function (ev, device) {
         $rootScope.device = device.uuid
         $rootScope.editDevice = $scope.editDevice
@@ -75,6 +84,7 @@ angular
           $scope.editDevice(null, $scope.device)
         }
 
+        // request to load all devices
         const deviceReq = {
           method: 'GET',
           url: '/api/devices/' + $scope.deviceID,
@@ -87,6 +97,7 @@ angular
         })
       }
 
+      //functionality for userdialogue to add a new device
       $scope.addDevice = function (ev) {
         $mdDialog.show({
           controller: addDeviceController,
@@ -114,7 +125,7 @@ angular
           }
         }
 
-        $scope.serviceRegex = /[a-z]+:[0-9]+/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
+        $scope.serviceRegex = /[a-z]+:[0-9]+/ // i.e. http:80 // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
         $scope.macRegex = '([A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2})'
         $scope.ipRegex = /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/
         $scope.servicePort = ''
@@ -133,6 +144,7 @@ angular
           'modell': null
         }
 
+        // generate uuid for a device
         let uuid4 = function () {
           return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
                     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -193,7 +205,7 @@ angular
         $scope.caption = 'bearbeiten'
         $scope.action = 'Änderungen speichern'
 
-        $scope.serviceRegex = /[a-z]+:[0-9]+(?:,\s[a-z]+:[0-9]+)*/ // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
+        $scope.serviceRegex = /[a-z]+:[0-9]+(?:,\s[a-z]+:[0-9]+)*/ // i.e. http: 80 // /(?:[a-z]+:[0-9]+(?:,\s)*)+/
         $scope.macRegex = '([A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+)'
         $scope.ipRegex = '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)'
         $scope.servicePort = ''
@@ -223,6 +235,7 @@ angular
           $scope.device.ports = $scope.ports.join(', ')
           $scope.device.services = $scope.services.join(', ')
 
+          //Put update to db via api endpoint
           const deviceUpdateReq = {
             method: 'PUT',
             url: '/api/devices/' + $scope.device.uuid,
