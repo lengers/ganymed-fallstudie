@@ -15,8 +15,17 @@ const connection = mysql.createConnection({
   database: 'Ganymed'
 })
 
+/* =========================================================== scanforge ===========================================================
+ *  Forges a fake scan that looks realistic to some degree. Used instead of a real scan engine (like nmap or OpenVAS).
+ *
+ */
 scanforge
+/* =========================================================== forge scan ===========================================================
+ *  Creates a new scan with results for each device.
+ *
+ */
 .get('/', (req, res) => {
+  // Map known ports and services
   let portMap = new HashMap().set('22', 'ssh').set('23', 'telnet').set('80', 'http').set('443', 'https').set('161', 'snmp').set('8080', 'http')
   // hashmaps only work in one direction
   let serviceMap = new HashMap().set('ssh', '22').set('telnet', '23').set('http', '80').set('https', '443').set('snmp', '161').set('http', '8080')
@@ -24,12 +33,14 @@ scanforge
   let deviceRiskMap = new HashMap()
   let deviceVulnMap = new HashMap()
 
+  // get the details for possible vulnerabilities
   const textpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', 'vulnTexts.json')
   let vulnTexts = JSON.parse(fs.readFileSync(textpath, 'utf8'))
   console.log(vulnTexts)
 
   let riskSum = 0
 
+  // scan results skeleton
   let scan = {
     'devices': [],
     'vulnerabilities': [],
@@ -50,8 +61,7 @@ scanforge
     'overallRisk': null
   }
 
-  // let scanJson = JSON.parse(JSON.stringify(scan))
-
+  // do the following for every device in db
   const createQuery = 'SELECT * FROM device;'
   try {
     connection.query(createQuery, (error, results, fields) => {
@@ -79,17 +89,21 @@ scanforge
         device.services.services = results[i].services
         let services = results[i].services.split(', ')
         let servicesPorts = []
+        // get the correct ports for services
         for (var k = 0; k < services.length; k++) {
           servicesPorts[k] = serviceMap.get(services[k])
         }
         device.services.ports = servicesPorts.join(', ')
 
         let vulnerability = {}
+        // flip a coin if the device has a vulnerability
         if (Boolean(Math.floor(Math.random() * 2)) === true) {
+          // select a vuln at random
           let vulnId = vulnTexts[Math.floor(Math.random() * vulnTexts.length)]
           console.log('vulnId: ' + vulnId)
           vulnerability.device = device.uuid
           vulnerability.type = vulnId.type
+          // throw a dice to determine which service is vulernable
           vulnerability.issue = vulnId.issue.replace('PLACEHOLDER', device.openPorts[Math.floor(Math.random() * device.openPorts.length)].service.toUpperCase())
           vulnerability.solution = vulnId.solution
           vulnerability.actions = vulnId.actions
@@ -107,6 +121,7 @@ scanforge
         }
 
         device.osNmap = 'Linux'
+        // determine risk depending of absence of vulnerability or not
         if (vulnerability !== '{}') {
           device.risk = Math.floor(Math.random() * (10 - 3) + 3)
         } else {
@@ -114,6 +129,7 @@ scanforge
         }
         device.catergory = 'device'
 
+        // calculate risk statistics
         riskSum += device.risk
         if (deviceRiskMap.has(device.risk)) {
           let serviceCount = deviceRiskMap.get(device.risk)
@@ -149,6 +165,10 @@ scanforge
     })
   }
 })
+/* =========================================================== fix scan ===========================================================
+ *  Takes an existing scan and patches a given vulnerability out of it. Sends back and stores in the db the results as a new scan afterwards.
+ *
+ */
 .get('/fix/:scanId/:deviceId', (req, res) => {
   const scanpath = path.join(__dirname, '..', '..', 'public', 'assets', 'mock', req.params.scanId + '.json')
   fs.readFile(scanpath, (err, rawScan) => {
